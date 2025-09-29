@@ -1,0 +1,102 @@
+interface Property<T> @(Observer, Owner) {
+    events @(Owner) -> @(Owner, Observer) {
+        private update: PropertyUpdate<T>,
+    }
+
+    state {
+        value: T,
+    }
+
+    impl @(Owner) { }
+}
+
+struct PropertyUpdate<T> { new_value: T }
+
+
+interface Request<Req, Resp> @(Client, Server) {
+    events @(Client) -> @(Server, Client) {
+        private request: Request<Req>,
+    }
+
+    events @(Server) -> @(Client) {
+        private response: Response<Resp>,
+    }
+
+    impl @(Server) {
+        handler: async Req -> Resp,
+    }
+
+    methods @(Client) {
+        call: async Req -> Resp,
+    }
+}
+
+struct Request<T> {
+    request_id: u32,
+    worker: u16,
+    payload: T,
+}
+
+struct Response<T> {
+    request_id: u32,
+    requester: u64,
+    requester_worker: u16,
+    payload: T,
+}
+
+interface Stream<T> @(Receiver, Sender) {
+    events @(Sender) -> @(Receiver) {
+        private item: StreamItem<T>,
+    }
+
+    impl @(Receiver) {
+        handler: async T -> void,
+    }
+
+    methods @(Sender) {
+        send: async T -> void,
+    }
+}
+
+struct StreamItem<T> {
+    seq: u64,
+    payload: T,
+}
+
+interface MultiStream<T> @(Receiver, Sender) {
+    events @(Sender) -> @(Receiver) {
+        private item: MultiStreamItem<T>,
+    }
+
+    methods @(Sender) {
+        new_stream: MultiStreamId -> void,
+    }
+}
+
+struct MultiStreamId {
+    owner: u64,
+    id: u32,
+}
+
+struct MultiStreamItem<T> {
+    stream_id: MultiStreamId,
+    seq: u64,
+    payload: option<T>,
+}
+
+interface ByteStream @(Receiver, Sender) {
+    events @(Sender) -> @(Receiver) {
+        private blob: void,
+    }
+
+    methods @(Sender) {
+        send: async [u8] -> u64,
+        wait_consumed: async u64 -> void,
+    }
+
+    methods @(Receiver) {
+        cursor: void -> u64,
+        peek: void -> [u8],
+        consume: u64 -> [u8],
+    }
+}

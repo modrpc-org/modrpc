@@ -1,0 +1,8 @@
+import std "../../proto/std.modrpc"
+
+interface P2pBenchmark @(Client, Server) {
+    objects {
+        test_request: std.Request<u64, result<u64, void>> @(Client, Server),
+    }
+}
+

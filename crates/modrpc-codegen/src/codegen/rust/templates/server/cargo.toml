@@ -1,0 +1,12 @@
+[package]
+name = "PKG_NAME-server"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+mproto = "0.2"
+modrpc = "0.0"
+
+PKG_NAME-modrpc = { path = "../PKG_NAME-modrpc/rust" }

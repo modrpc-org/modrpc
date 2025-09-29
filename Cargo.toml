@@ -1,0 +1,16 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/modrpc",
+    "crates/modrpcc",
+    "crates/modrpc-codegen",
+    "crates/modrpc-executor",
+    "crates/modrpc-hub",
+    "std-modrpc/rust",
+]
+exclude = [
+    "examples/local-benchmark",
+    "examples/p2p-benchmark/server",
+    "examples/p2p-benchmark/client",
+    "integ-tests/foo-modrpc",
+]

@@ -1,0 +1,14 @@
+[package]
+name = "PKG_NAME"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+mproto = { version = "0.2", default-features = false }
+modrpc = { version = "0.0", default-features = false }
+std-modrpc = "0.0"
+
+[features]
+default = ["std"]
+std = ["mproto/std"]
+alloc = ["mproto/alloc"]

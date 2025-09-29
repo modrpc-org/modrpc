@@ -1,0 +1,16 @@
+[package]
+name = "p2p-benchmark-client"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+core_affinity = "0.8"
+modrpc = { path = "../../../crates/modrpc", features = ["tcp-transport"] }
+modrpc-executor = { path = "../../../crates/modrpc-executor", features = ["tokio"] }
+std-modrpc = { path = "../../../std-modrpc/rust" }
+tokio = "1"
+no-std-async = "1"
+
+p2p-benchmark-modrpc = { path = "../p2p-benchmark-modrpc/rust" }

@@ -1,0 +1,24 @@
+[package]
+name = "std-modrpc"
+version = "0.0.1"
+edition = "2024"
+description = "modrpc's standard library implementation"
+repository = "https://github.com/modrpc-org/modrpc"
+license = "Apache-2.0"
+
+[dependencies]
+log = "0.4"
+localq = "0.0"
+refpool = "0.4"
+slab = "0.4"
+thiserror = "1"
+probius = "0.0"
+
+mproto = { version = "0.2", default-features = false }
+modrpc = { version = "0.0", path = "../../crates/modrpc", default-features = false }
+
+[features]
+default = ["std"]
+std = ["mproto/std"]
+alloc = ["mproto/alloc"]
+

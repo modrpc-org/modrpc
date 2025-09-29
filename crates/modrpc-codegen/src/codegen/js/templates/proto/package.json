@@ -1,0 +1,15 @@
+{
+  "name": "PKG_NAME",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@modrpc-org/std-modrpc": "0.1",
+    "@modrpc-org/mproto": "0.2",
+    "@modrpc-org/modrpc": "0.1"
+  },
+  "devDependencies": {}
+}

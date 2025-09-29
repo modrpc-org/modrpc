@@ -1,0 +1,14 @@
+[package]
+name = "foo-modrpc"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+mproto = { version = "0.2", default-features = false }
+modrpc = { path = "../../../crates/modrpc", default-features = false }
+std-modrpc = { path = "../../../std-modrpc/rust" }
+
+[features]
+default = ["std"]
+std = ["mproto/std"]
+alloc = ["mproto/alloc"]

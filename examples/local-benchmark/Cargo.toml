@@ -1,0 +1,17 @@
+[package]
+name = "local-benchmark"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core_affinity = "0.8"
+modrpc = { path = "../../crates/modrpc", default-features = false }
+modrpc-executor = { path = "../../crates/modrpc-executor", features = ["tokio"] }
+#probius = { version = "0.0", features = ["enabled", "tcp-sink"] }
+std-modrpc = { path = "../../std-modrpc/rust" }
+foo-modrpc = { path = "../../integ-tests/foo-modrpc/rust" }
+no-std-async = "1"
+
+[profile.release]
+debug = true
+debug-assertions = true

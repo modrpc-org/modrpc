@@ -1,0 +1,36 @@
+[package]
+name = "modrpc-executor"
+version = "0.0.1"
+edition = "2024"
+description = "modrpc integration for different async executors"
+repository = "https://github.com/modrpc-org/modrpc"
+license = "Apache-2.0"
+
+[features]
+default = []
+std = []
+async-timer = ["dep:async-timer"]
+dioxus = ["async-timer", "dep:dioxus", "ispawn/dioxus"]
+futures-executor = [
+  "std",
+  "async-timer",
+  "ispawn/futures-executor",
+  "dep:futures-executor",
+]
+tokio = ["std", "ispawn/tokio", "dep:tokio"]
+wasm-bindgen = [
+  "std",
+  "async-timer",
+  "ispawn/wasm-bindgen",
+  "dep:wasm-bindgen-futures",
+]
+
+[dependencies]
+ispawn = "0.0"
+
+async-timer = { version = "1.0.0-beta.14", optional = true }
+dioxus = { version = "0.6", optional = true, default-features = false }
+futures-executor = { version = "0.3", optional = true }
+tokio = { version = "1", optional = true, default-features = false, features = ["rt", "time"] }
+
+wasm-bindgen-futures = { version = "0.4", optional = true }

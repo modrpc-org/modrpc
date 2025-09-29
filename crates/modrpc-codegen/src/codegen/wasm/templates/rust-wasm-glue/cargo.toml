@@ -1,0 +1,17 @@
+[package]
+name = "INTERFACE_NAME-ROLE_NAME-modrpc-wasm"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wit-bindgen = { git = "https://github.com/bytecodealliance/wit-bindgen", version = "0.4.0" }
+
+mproto = { path = "0.2" }
+modrpc = { path = "0.0", default-features = false, features = [] }
+modrpc-wasm-glue = { path = "0.0" }
+
+std-modrpc = "0.0"
+PROJECT_NAME-modrpc = { path = "../../../rust" }

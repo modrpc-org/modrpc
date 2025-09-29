@@ -1,0 +1,13 @@
+[package]
+name = "modrpc-codegen"
+version = "0.0.1"
+edition = "2024"
+description = "Parse modrpc schemas and generate code from them"
+repository = "https://github.com/modrpc-org/modrpc"
+license = "Apache-2.0"
+
+[dependencies]
+nom = "7"
+genco = "0.17"
+indoc = "2"
+mproto-codegen = "0.0"

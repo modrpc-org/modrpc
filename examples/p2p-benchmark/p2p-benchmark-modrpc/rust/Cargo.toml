@@ -1,0 +1,15 @@
+[package]
+name = "p2p-benchmark-modrpc"
+version = "0.1.0"
+authors = ["p2p-benchmark-modrpc authors"]
+edition = "2018"
+
+[dependencies]
+mproto = { version = "0.2", default-features = false }
+modrpc = { path = "../../../../crates/modrpc", default-features = false }
+std-modrpc = { path = "../../../../std-modrpc/rust" }
+
+[features]
+default = ["std"]
+std = ["mproto/std"]
+alloc = ["mproto/alloc"]

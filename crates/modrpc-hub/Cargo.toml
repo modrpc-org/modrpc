@@ -1,0 +1,32 @@
+[package]
+name = "modrpc-hub"
+version = "0.0.1"
+edition = "2024"
+description = "Multicast transport for modrpc"
+repository = "https://github.com/modrpc-org/modrpc"
+license = "Apache-2.0"
+
+[features]
+default = ["tcp-transport", "websocket-transport"]
+tcp-transport = ["modrpc/tcp-transport", "dep:tokio"]
+websocket-transport = ["modrpc/ws-transport", "dep:tokio-tungstenite"]
+gloo-websocket = ["modrpc/web-ws-transport", "dep:gloo-net"]
+
+[dependencies]
+futures-lite = "1"
+futures-util = "0.3"
+futures-io = "0.3"
+log = "0.4"
+oneshot = "0.1"
+slotmap = "1"
+spin = "0.9"
+
+bab = "0.0"
+localq = "0.0"
+modrpc = { version = "0.0", path = "../modrpc", default-features = false }
+mproto = "0.2"
+probius = "0.0"
+
+tokio = { version = "1", optional = true, features = ["net"] }
+tokio-tungstenite = { version = "0.27", optional = true }
+gloo-net = { version = "0.6", optional = true, default-features = false, features = ["websocket"] }

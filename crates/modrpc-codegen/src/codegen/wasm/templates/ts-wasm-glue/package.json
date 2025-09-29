@@ -1,0 +1,20 @@
+{
+  "name": "PKG_NAME",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "PROJECT_NAME-modrpc": "file:../../../typescript",
+    "@modrpc-org/mproto": "0.2",
+    "@modrpc-org/modrpc": "0.1",
+    "@modrpc-org/std-modrpc": "0.1"
+  },
+  "devDependencies": {
+    "@bytecodealliance/jco": "^0.4.2",
+    "@types/node": "^18.15.10"
+  }
+}

@@ -1,0 +1,18 @@
+[package]
+name = "p2p-benchmark-server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+core_affinity = "0.8"
+modrpc = { path = "../../../crates/modrpc", features = ["tcp-transport"] }
+modrpc-executor = { path = "../../../crates/modrpc-executor", features = ["tokio"] }
+p2p-benchmark-modrpc = { path = "../p2p-benchmark-modrpc/rust" }
+std-modrpc = { path = "../../../std-modrpc/rust" }
+tokio = "1"
+
+[profile.release]
+debug = true
+debug-assertions = true

@@ -1,0 +1,23 @@
+struct EndpointAddr {
+    endpoint: u64,
+}
+
+struct PacketBundle {
+    channel_id: u32,
+    length: u16,
+}
+
+struct TransmitPacket {
+    payload_length: u16,
+    infra_id: u16,
+    plane_id: u32,
+    topic: u32,
+    source: EndpointAddr,
+}
+
+struct PlaneHandshake<T> {
+    plane_id: u32,
+    endpoint_addr: EndpointAddr,
+    init: T,
+}
+
