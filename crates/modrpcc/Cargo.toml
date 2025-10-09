@@ -1,6 +1,6 @@
 [package]
 name = "modrpcc"
-version = "0.0.1"
+version = "0.0.3"
 edition = "2024"
 description = "CLI tool to generate glue code from modrpc schemas"
 repository = "https://github.com/modrpc-org/modrpc"
@@ -8,6 +8,6 @@ license = "Apache-2.0"
 
 [dependencies]
 clap = "2.33.0"
-genco = "0.17"
+genco = "0.18"
 modrpc-codegen = { version = "0.0", path = "../modrpc-codegen/" }
 mproto-codegen = "0.0"

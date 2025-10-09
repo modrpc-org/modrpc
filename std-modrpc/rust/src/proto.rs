@@ -57,7 +57,9 @@ impl<'a, T: Owned> Lazy<'a> for PropertyUpdateLazy<'a, T> {
     type Owned = PropertyUpdate<T>;
 }
 
+impl<'a, T: Owned> Compatible<PropertyUpdateLazy<'a, T>> for PropertyUpdateLazy<'a, T> { }
 impl<'a, T: Owned> Compatible<PropertyUpdateLazy<'a, T>> for PropertyUpdate<T> { }
+impl<T: Owned> Compatible<PropertyUpdate<T>> for PropertyUpdate<T> { }
 impl<'a, T: Owned> Compatible<PropertyUpdate<T>> for PropertyUpdateLazy<'a, T> { }
 
 impl<'a, T: Owned> PropertyUpdateLazy<'a, T> {
@@ -215,7 +217,9 @@ impl<'a, T: Owned> Lazy<'a> for RequestLazy<'a, T> {
     type Owned = Request<T>;
 }
 
+impl<'a, T: Owned> Compatible<RequestLazy<'a, T>> for RequestLazy<'a, T> { }
 impl<'a, T: Owned> Compatible<RequestLazy<'a, T>> for Request<T> { }
+impl<T: Owned> Compatible<Request<T>> for Request<T> { }
 impl<'a, T: Owned> Compatible<Request<T>> for RequestLazy<'a, T> { }
 
 impl<'a, T: Owned> RequestLazy<'a, T> {
@@ -397,7 +401,9 @@ impl<'a, T: Owned> Lazy<'a> for ResponseLazy<'a, T> {
     type Owned = Response<T>;
 }
 
+impl<'a, T: Owned> Compatible<ResponseLazy<'a, T>> for ResponseLazy<'a, T> { }
 impl<'a, T: Owned> Compatible<ResponseLazy<'a, T>> for Response<T> { }
+impl<T: Owned> Compatible<Response<T>> for Response<T> { }
 impl<'a, T: Owned> Compatible<Response<T>> for ResponseLazy<'a, T> { }
 
 impl<'a, T: Owned> ResponseLazy<'a, T> {
@@ -583,7 +589,9 @@ impl<'a, T: Owned> Lazy<'a> for StreamItemLazy<'a, T> {
     type Owned = StreamItem<T>;
 }
 
+impl<'a, T: Owned> Compatible<StreamItemLazy<'a, T>> for StreamItemLazy<'a, T> { }
 impl<'a, T: Owned> Compatible<StreamItemLazy<'a, T>> for StreamItem<T> { }
+impl<T: Owned> Compatible<StreamItem<T>> for StreamItem<T> { }
 impl<'a, T: Owned> Compatible<StreamItem<T>> for StreamItemLazy<'a, T> { }
 
 impl<'a, T: Owned> StreamItemLazy<'a, T> {
@@ -736,7 +744,9 @@ impl<'a> Lazy<'a> for MultiStreamIdLazy<'a> {
     type Owned = MultiStreamId;
 }
 
+impl<'a> Compatible<MultiStreamIdLazy<'a>> for MultiStreamIdLazy<'a> { }
 impl<'a> Compatible<MultiStreamIdLazy<'a>> for MultiStreamId { }
+impl Compatible<MultiStreamId> for MultiStreamId { }
 impl<'a> Compatible<MultiStreamId> for MultiStreamIdLazy<'a> { }
 
 impl<'a> MultiStreamIdLazy<'a> {
@@ -908,7 +918,9 @@ impl<'a, T: Owned> Lazy<'a> for MultiStreamItemLazy<'a, T> {
     type Owned = MultiStreamItem<T>;
 }
 
+impl<'a, T: Owned> Compatible<MultiStreamItemLazy<'a, T>> for MultiStreamItemLazy<'a, T> { }
 impl<'a, T: Owned> Compatible<MultiStreamItemLazy<'a, T>> for MultiStreamItem<T> { }
+impl<T: Owned> Compatible<MultiStreamItem<T>> for MultiStreamItem<T> { }
 impl<'a, T: Owned> Compatible<MultiStreamItem<T>> for MultiStreamItemLazy<'a, T> { }
 
 impl<'a, T: Owned> MultiStreamItemLazy<'a, T> {
@@ -1081,7 +1093,9 @@ impl<'a, T: Owned> Lazy<'a> for PropertyInitStateLazy<'a, T> {
     type Owned = PropertyInitState<T>;
 }
 
+impl<'a, T: Owned> Compatible<PropertyInitStateLazy<'a, T>> for PropertyInitStateLazy<'a, T> { }
 impl<'a, T: Owned> Compatible<PropertyInitStateLazy<'a, T>> for PropertyInitState<T> { }
+impl<T: Owned> Compatible<PropertyInitState<T>> for PropertyInitState<T> { }
 impl<'a, T: Owned> Compatible<PropertyInitState<T>> for PropertyInitStateLazy<'a, T> { }
 
 impl<'a, T: Owned> PropertyInitStateLazy<'a, T> {
@@ -1214,7 +1228,9 @@ impl<'a> Lazy<'a> for PropertyObserverConfigLazy<'a> {
     type Owned = PropertyObserverConfig;
 }
 
+impl<'a> Compatible<PropertyObserverConfigLazy<'a>> for PropertyObserverConfigLazy<'a> { }
 impl<'a> Compatible<PropertyObserverConfigLazy<'a>> for PropertyObserverConfig { }
+impl Compatible<PropertyObserverConfig> for PropertyObserverConfig { }
 impl<'a> Compatible<PropertyObserverConfig> for PropertyObserverConfigLazy<'a> { }
 
 impl<'a> PropertyObserverConfigLazy<'a> {}
@@ -1331,7 +1347,9 @@ impl<'a> Lazy<'a> for PropertyOwnerConfigLazy<'a> {
     type Owned = PropertyOwnerConfig;
 }
 
+impl<'a> Compatible<PropertyOwnerConfigLazy<'a>> for PropertyOwnerConfigLazy<'a> { }
 impl<'a> Compatible<PropertyOwnerConfigLazy<'a>> for PropertyOwnerConfig { }
+impl Compatible<PropertyOwnerConfig> for PropertyOwnerConfig { }
 impl<'a> Compatible<PropertyOwnerConfig> for PropertyOwnerConfigLazy<'a> { }
 
 impl<'a> PropertyOwnerConfigLazy<'a> {}
@@ -1448,7 +1466,9 @@ impl<'a> Lazy<'a> for RequestInitStateLazy<'a> {
     type Owned = RequestInitState;
 }
 
+impl<'a> Compatible<RequestInitStateLazy<'a>> for RequestInitStateLazy<'a> { }
 impl<'a> Compatible<RequestInitStateLazy<'a>> for RequestInitState { }
+impl Compatible<RequestInitState> for RequestInitState { }
 impl<'a> Compatible<RequestInitState> for RequestInitStateLazy<'a> { }
 
 impl<'a> RequestInitStateLazy<'a> {}
@@ -1565,7 +1585,9 @@ impl<'a> Lazy<'a> for RequestClientConfigLazy<'a> {
     type Owned = RequestClientConfig;
 }
 
+impl<'a> Compatible<RequestClientConfigLazy<'a>> for RequestClientConfigLazy<'a> { }
 impl<'a> Compatible<RequestClientConfigLazy<'a>> for RequestClientConfig { }
+impl Compatible<RequestClientConfig> for RequestClientConfig { }
 impl<'a> Compatible<RequestClientConfig> for RequestClientConfigLazy<'a> { }
 
 impl<'a> RequestClientConfigLazy<'a> {}
@@ -1682,7 +1704,9 @@ impl<'a> Lazy<'a> for RequestServerConfigLazy<'a> {
     type Owned = RequestServerConfig;
 }
 
+impl<'a> Compatible<RequestServerConfigLazy<'a>> for RequestServerConfigLazy<'a> { }
 impl<'a> Compatible<RequestServerConfigLazy<'a>> for RequestServerConfig { }
+impl Compatible<RequestServerConfig> for RequestServerConfig { }
 impl<'a> Compatible<RequestServerConfig> for RequestServerConfigLazy<'a> { }
 
 impl<'a> RequestServerConfigLazy<'a> {}
@@ -1799,7 +1823,9 @@ impl<'a> Lazy<'a> for StreamInitStateLazy<'a> {
     type Owned = StreamInitState;
 }
 
+impl<'a> Compatible<StreamInitStateLazy<'a>> for StreamInitStateLazy<'a> { }
 impl<'a> Compatible<StreamInitStateLazy<'a>> for StreamInitState { }
+impl Compatible<StreamInitState> for StreamInitState { }
 impl<'a> Compatible<StreamInitState> for StreamInitStateLazy<'a> { }
 
 impl<'a> StreamInitStateLazy<'a> {}
@@ -1916,7 +1942,9 @@ impl<'a> Lazy<'a> for StreamReceiverConfigLazy<'a> {
     type Owned = StreamReceiverConfig;
 }
 
+impl<'a> Compatible<StreamReceiverConfigLazy<'a>> for StreamReceiverConfigLazy<'a> { }
 impl<'a> Compatible<StreamReceiverConfigLazy<'a>> for StreamReceiverConfig { }
+impl Compatible<StreamReceiverConfig> for StreamReceiverConfig { }
 impl<'a> Compatible<StreamReceiverConfig> for StreamReceiverConfigLazy<'a> { }
 
 impl<'a> StreamReceiverConfigLazy<'a> {}
@@ -2033,7 +2061,9 @@ impl<'a> Lazy<'a> for StreamSenderConfigLazy<'a> {
     type Owned = StreamSenderConfig;
 }
 
+impl<'a> Compatible<StreamSenderConfigLazy<'a>> for StreamSenderConfigLazy<'a> { }
 impl<'a> Compatible<StreamSenderConfigLazy<'a>> for StreamSenderConfig { }
+impl Compatible<StreamSenderConfig> for StreamSenderConfig { }
 impl<'a> Compatible<StreamSenderConfig> for StreamSenderConfigLazy<'a> { }
 
 impl<'a> StreamSenderConfigLazy<'a> {}
@@ -2150,7 +2180,9 @@ impl<'a> Lazy<'a> for MultiStreamInitStateLazy<'a> {
     type Owned = MultiStreamInitState;
 }
 
+impl<'a> Compatible<MultiStreamInitStateLazy<'a>> for MultiStreamInitStateLazy<'a> { }
 impl<'a> Compatible<MultiStreamInitStateLazy<'a>> for MultiStreamInitState { }
+impl Compatible<MultiStreamInitState> for MultiStreamInitState { }
 impl<'a> Compatible<MultiStreamInitState> for MultiStreamInitStateLazy<'a> { }
 
 impl<'a> MultiStreamInitStateLazy<'a> {}
@@ -2267,7 +2299,9 @@ impl<'a> Lazy<'a> for MultiStreamReceiverConfigLazy<'a> {
     type Owned = MultiStreamReceiverConfig;
 }
 
+impl<'a> Compatible<MultiStreamReceiverConfigLazy<'a>> for MultiStreamReceiverConfigLazy<'a> { }
 impl<'a> Compatible<MultiStreamReceiverConfigLazy<'a>> for MultiStreamReceiverConfig { }
+impl Compatible<MultiStreamReceiverConfig> for MultiStreamReceiverConfig { }
 impl<'a> Compatible<MultiStreamReceiverConfig> for MultiStreamReceiverConfigLazy<'a> { }
 
 impl<'a> MultiStreamReceiverConfigLazy<'a> {}
@@ -2384,7 +2418,9 @@ impl<'a> Lazy<'a> for MultiStreamSenderConfigLazy<'a> {
     type Owned = MultiStreamSenderConfig;
 }
 
+impl<'a> Compatible<MultiStreamSenderConfigLazy<'a>> for MultiStreamSenderConfigLazy<'a> { }
 impl<'a> Compatible<MultiStreamSenderConfigLazy<'a>> for MultiStreamSenderConfig { }
+impl Compatible<MultiStreamSenderConfig> for MultiStreamSenderConfig { }
 impl<'a> Compatible<MultiStreamSenderConfig> for MultiStreamSenderConfigLazy<'a> { }
 
 impl<'a> MultiStreamSenderConfigLazy<'a> {}
@@ -2501,7 +2537,9 @@ impl<'a> Lazy<'a> for ByteStreamInitStateLazy<'a> {
     type Owned = ByteStreamInitState;
 }
 
+impl<'a> Compatible<ByteStreamInitStateLazy<'a>> for ByteStreamInitStateLazy<'a> { }
 impl<'a> Compatible<ByteStreamInitStateLazy<'a>> for ByteStreamInitState { }
+impl Compatible<ByteStreamInitState> for ByteStreamInitState { }
 impl<'a> Compatible<ByteStreamInitState> for ByteStreamInitStateLazy<'a> { }
 
 impl<'a> ByteStreamInitStateLazy<'a> {}
@@ -2618,7 +2656,9 @@ impl<'a> Lazy<'a> for ByteStreamReceiverConfigLazy<'a> {
     type Owned = ByteStreamReceiverConfig;
 }
 
+impl<'a> Compatible<ByteStreamReceiverConfigLazy<'a>> for ByteStreamReceiverConfigLazy<'a> { }
 impl<'a> Compatible<ByteStreamReceiverConfigLazy<'a>> for ByteStreamReceiverConfig { }
+impl Compatible<ByteStreamReceiverConfig> for ByteStreamReceiverConfig { }
 impl<'a> Compatible<ByteStreamReceiverConfig> for ByteStreamReceiverConfigLazy<'a> { }
 
 impl<'a> ByteStreamReceiverConfigLazy<'a> {}
@@ -2735,7 +2775,9 @@ impl<'a> Lazy<'a> for ByteStreamSenderConfigLazy<'a> {
     type Owned = ByteStreamSenderConfig;
 }
 
+impl<'a> Compatible<ByteStreamSenderConfigLazy<'a>> for ByteStreamSenderConfigLazy<'a> { }
 impl<'a> Compatible<ByteStreamSenderConfigLazy<'a>> for ByteStreamSenderConfig { }
+impl Compatible<ByteStreamSenderConfig> for ByteStreamSenderConfig { }
 impl<'a> Compatible<ByteStreamSenderConfig> for ByteStreamSenderConfigLazy<'a> { }
 
 impl<'a> ByteStreamSenderConfigLazy<'a> {}

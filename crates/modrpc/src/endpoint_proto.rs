@@ -47,7 +47,9 @@ impl<'a> Lazy<'a> for EndpointAddrLazy<'a> {
     type Owned = EndpointAddr;
 }
 
+impl<'a> Compatible<EndpointAddrLazy<'a>> for EndpointAddrLazy<'a> {}
 impl<'a> Compatible<EndpointAddrLazy<'a>> for EndpointAddr {}
+impl Compatible<EndpointAddr> for EndpointAddr {}
 impl<'a> Compatible<EndpointAddr> for EndpointAddrLazy<'a> {}
 
 impl<'a> EndpointAddrLazy<'a> {
@@ -185,7 +187,9 @@ impl<'a> Lazy<'a> for PacketBundleLazy<'a> {
     type Owned = PacketBundle;
 }
 
+impl<'a> Compatible<PacketBundleLazy<'a>> for PacketBundleLazy<'a> {}
 impl<'a> Compatible<PacketBundleLazy<'a>> for PacketBundle {}
+impl Compatible<PacketBundle> for PacketBundle {}
 impl<'a> Compatible<PacketBundle> for PacketBundleLazy<'a> {}
 
 impl<'a> PacketBundleLazy<'a> {
@@ -354,7 +358,9 @@ impl<'a> Lazy<'a> for TransmitPacketLazy<'a> {
     type Owned = TransmitPacket;
 }
 
+impl<'a> Compatible<TransmitPacketLazy<'a>> for TransmitPacketLazy<'a> {}
 impl<'a> Compatible<TransmitPacketLazy<'a>> for TransmitPacket {}
+impl Compatible<TransmitPacket> for TransmitPacket {}
 impl<'a> Compatible<TransmitPacket> for TransmitPacketLazy<'a> {}
 
 impl<'a> TransmitPacketLazy<'a> {
@@ -568,7 +574,9 @@ impl<'a, T: Owned> Lazy<'a> for PlaneHandshakeLazy<'a, T> {
     type Owned = PlaneHandshake<T>;
 }
 
+impl<'a, T: Owned> Compatible<PlaneHandshakeLazy<'a, T>> for PlaneHandshakeLazy<'a, T> {}
 impl<'a, T: Owned> Compatible<PlaneHandshakeLazy<'a, T>> for PlaneHandshake<T> {}
+impl<T: Owned> Compatible<PlaneHandshake<T>> for PlaneHandshake<T> {}
 impl<'a, T: Owned> Compatible<PlaneHandshake<T>> for PlaneHandshakeLazy<'a, T> {}
 
 impl<'a, T: Owned> PlaneHandshakeLazy<'a, T> {

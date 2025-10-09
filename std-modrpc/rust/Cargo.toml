@@ -1,6 +1,6 @@
 [package]
 name = "std-modrpc"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2024"
 description = "modrpc's standard library implementation"
 repository = "https://github.com/modrpc-org/modrpc"

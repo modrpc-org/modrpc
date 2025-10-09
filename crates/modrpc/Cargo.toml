@@ -1,6 +1,6 @@
 [package]
 name = "modrpc"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2024"
 description = "Runtime for modrpc - a modular RPC framework"
 repository = "https://github.com/modrpc-org/modrpc"
