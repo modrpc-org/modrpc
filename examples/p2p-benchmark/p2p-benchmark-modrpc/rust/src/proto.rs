@@ -38,7 +38,9 @@ impl<'a> Lazy<'a> for P2pBenchmarkInitStateLazy<'a> {
     type Owned = P2pBenchmarkInitState;
 }
 
+impl<'a> Compatible<P2pBenchmarkInitStateLazy<'a>> for P2pBenchmarkInitStateLazy<'a> { }
 impl<'a> Compatible<P2pBenchmarkInitStateLazy<'a>> for P2pBenchmarkInitState { }
+impl Compatible<P2pBenchmarkInitState> for P2pBenchmarkInitState { }
 impl<'a> Compatible<P2pBenchmarkInitState> for P2pBenchmarkInitStateLazy<'a> { }
 
 impl<'a> P2pBenchmarkInitStateLazy<'a> {}
@@ -155,7 +157,9 @@ impl<'a> Lazy<'a> for P2pBenchmarkClientConfigLazy<'a> {
     type Owned = P2pBenchmarkClientConfig;
 }
 
+impl<'a> Compatible<P2pBenchmarkClientConfigLazy<'a>> for P2pBenchmarkClientConfigLazy<'a> { }
 impl<'a> Compatible<P2pBenchmarkClientConfigLazy<'a>> for P2pBenchmarkClientConfig { }
+impl Compatible<P2pBenchmarkClientConfig> for P2pBenchmarkClientConfig { }
 impl<'a> Compatible<P2pBenchmarkClientConfig> for P2pBenchmarkClientConfigLazy<'a> { }
 
 impl<'a> P2pBenchmarkClientConfigLazy<'a> {}
@@ -272,7 +276,9 @@ impl<'a> Lazy<'a> for P2pBenchmarkServerConfigLazy<'a> {
     type Owned = P2pBenchmarkServerConfig;
 }
 
+impl<'a> Compatible<P2pBenchmarkServerConfigLazy<'a>> for P2pBenchmarkServerConfigLazy<'a> { }
 impl<'a> Compatible<P2pBenchmarkServerConfigLazy<'a>> for P2pBenchmarkServerConfig { }
+impl Compatible<P2pBenchmarkServerConfig> for P2pBenchmarkServerConfig { }
 impl<'a> Compatible<P2pBenchmarkServerConfig> for P2pBenchmarkServerConfigLazy<'a> { }
 
 impl<'a> P2pBenchmarkServerConfigLazy<'a> {}

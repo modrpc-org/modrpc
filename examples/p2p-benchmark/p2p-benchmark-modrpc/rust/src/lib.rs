@@ -1,5 +1,3 @@
-#![feature(type_alias_impl_trait)]
-
 pub use interface::*;
 pub use proto::*;
 pub use roles::*;

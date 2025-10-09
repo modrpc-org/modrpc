@@ -54,7 +54,9 @@ impl<'a> Lazy<'a> for FooInitStateLazy<'a> {
     type Owned = FooInitState;
 }
 
+impl<'a> Compatible<FooInitStateLazy<'a>> for FooInitStateLazy<'a> { }
 impl<'a> Compatible<FooInitStateLazy<'a>> for FooInitState { }
+impl Compatible<FooInitState> for FooInitState { }
 impl<'a> Compatible<FooInitState> for FooInitStateLazy<'a> { }
 
 impl<'a> FooInitStateLazy<'a> {
@@ -185,7 +187,9 @@ impl<'a> Lazy<'a> for FooClientConfigLazy<'a> {
     type Owned = FooClientConfig;
 }
 
+impl<'a> Compatible<FooClientConfigLazy<'a>> for FooClientConfigLazy<'a> { }
 impl<'a> Compatible<FooClientConfigLazy<'a>> for FooClientConfig { }
+impl Compatible<FooClientConfig> for FooClientConfig { }
 impl<'a> Compatible<FooClientConfig> for FooClientConfigLazy<'a> { }
 
 impl<'a> FooClientConfigLazy<'a> {}
@@ -302,7 +306,9 @@ impl<'a> Lazy<'a> for FooServerConfigLazy<'a> {
     type Owned = FooServerConfig;
 }
 
+impl<'a> Compatible<FooServerConfigLazy<'a>> for FooServerConfigLazy<'a> { }
 impl<'a> Compatible<FooServerConfigLazy<'a>> for FooServerConfig { }
+impl Compatible<FooServerConfig> for FooServerConfig { }
 impl<'a> Compatible<FooServerConfig> for FooServerConfigLazy<'a> { }
 
 impl<'a> FooServerConfigLazy<'a> {}
