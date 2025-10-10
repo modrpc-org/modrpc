@@ -1,8 +1,9 @@
 import std "../proto/std.modrpc"
 
+// An interface
 interface Foo @(Client, Server) {
     objects {
-        foo_the_bar: std.Request<u32, result<u64, string>> @(Server, Client),
+        foo_the_bar: std.Request<u32, result<u64, string>> @(Server, Client), // a comment
         bar_the_foo: std.Request<string, result<string, string>> @(Server, Client),
         fooness: std.Property<u64> @(Client, Server),
     }

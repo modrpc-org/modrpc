@@ -495,7 +495,22 @@ pub fn parse_file(path: impl AsRef<std::path::Path>) -> Result<Schema, String> {
         return Err(format!("Failed to read file '{}': {e}", path.as_ref().display()));
     }
 
-    parse_schema(&file_str)
+    // Remove comments
+    let mut schema_str = file_str.lines()
+        .map(|line| {
+            if let Some(index) = line.find("//") {
+                // Return the slice from the start of the line up to the comment marker
+                &line[..index]
+            } else {
+                // If no comment is found, return the entire line
+                line
+            }
+        })
+        .collect::<Vec<&str>>()
+        .join("\n");
+    schema_str += "\n";
+
+    parse_schema(&schema_str)
 }
 
 #[cfg(test)]

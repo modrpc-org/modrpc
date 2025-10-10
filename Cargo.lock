@@ -616,9 +616,9 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "libc"
-version = "0.2.176"
+version = "0.2.177"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58f929b4d672ea937a23a1ab494143d968337a5f47e56d0815df1e0890ddf174"
+checksum = "2874a2af47a2325c2001a6e6fad9b16a53b802102b528163885171cf92b15976"
 
 [[package]]
 name = "localq"
@@ -741,7 +741,7 @@ dependencies = [
 
 [[package]]
 name = "modrpc-codegen"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "genco",
  "indoc",
@@ -784,7 +784,7 @@ dependencies = [
 
 [[package]]
 name = "modrpcc"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "clap",
  "genco",
@@ -800,9 +800,9 @@ checksum = "822a7845dd561584a4bfdc9ca97586e6855342487b1b8202d7246f537afa08b4"
 
 [[package]]
 name = "mproto-codegen"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3d899b010029e574028a4aef0afebd72336d674a35cac652cc14e9487f65cd0"
+checksum = "fc58dc1056ff4ed3ccb9c41ca47731bb4923f2a6c9128a076b2b4d704c76fb60"
 dependencies = [
  "genco",
  "nom",

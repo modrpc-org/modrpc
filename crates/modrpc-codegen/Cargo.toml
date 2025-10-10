@@ -1,6 +1,6 @@
 [package]
 name = "modrpc-codegen"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2024"
 description = "Parse modrpc schemas and generate code from them"
 repository = "https://github.com/modrpc-org/modrpc"
