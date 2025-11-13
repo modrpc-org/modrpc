@@ -82,7 +82,7 @@ impl TransportHandle {
             writer_flush_sender.id(),
             || {
                 // TODO configurable
-                FlushBatcher::new(std::time::Duration::from_micros(100))
+                FlushBatcher::new(std::time::Duration::from_micros(0))
             },
             |flush_batcher| flush_batcher.clone(),
         )
@@ -167,7 +167,8 @@ impl TransportHandle {
     ) -> FlushBatcher {
         use crate::flush_batcher::FlushBatcherStatus;
 
-        let flush_batcher = FlushBatcher::new(std::time::Duration::from_micros(100));
+        // TODO configurable
+        let flush_batcher = FlushBatcher::new(std::time::Duration::from_micros(0));
         let mut sleeper = worker_cx.new_sleeper();
         worker_cx.spawn({
             let flush_batcher = flush_batcher.clone();
