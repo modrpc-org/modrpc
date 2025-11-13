@@ -202,6 +202,7 @@ dependencies = [
  "futures-task",
  "pin-project-lite",
  "pin-utils",
+ "slab",
 ]
 
 [[package]]
@@ -393,7 +394,7 @@ dependencies = [
  "mproto",
  "oneshot",
  "pollster",
- "probius",
+ "probius 0.0.8",
  "siphasher",
  "spin",
  "thid",
@@ -413,17 +414,6 @@ name = "mproto"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "822a7845dd561584a4bfdc9ca97586e6855342487b1b8202d7246f537afa08b4"
-
-[[package]]
-name = "no-std-async"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "482316c0ef0c183b171a332f15585551cd31b7ac5b1148c21e061b3f4a00618c"
-dependencies = [
- "pin-list",
- "pin-project",
- "spin",
-]
 
 [[package]]
 name = "nu-ansi-term"
@@ -472,7 +462,6 @@ dependencies = [
  "core_affinity",
  "modrpc",
  "modrpc-executor",
- "no-std-async",
  "p2p-benchmark-modrpc",
  "std-modrpc",
  "tokio",
@@ -494,36 +483,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f38d5652c16fde515bb1ecef450ab0f6a219d619a7274976324d5e377f7dceba"
 
 [[package]]
-name = "pin-list"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a3c0987a7464afc0d593f13429732ef87e9a6c8e7909a1a22faeff7e1d2159d"
-dependencies = [
- "pin-project-lite",
- "pinned-aliasable",
-]
-
-[[package]]
-name = "pin-project"
-version = "1.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "677f1add503faace112b9f1373e43e9e054bfdd22ff1a63c1bc485eaec6a6a8a"
-dependencies = [
- "pin-project-internal",
-]
-
-[[package]]
-name = "pin-project-internal"
-version = "1.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e918e4ff8c4549eb882f14b3a4bc8c8bc93de829416eacf579f1207a8fbf861"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "pin-project-lite"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -534,12 +493,6 @@ name = "pin-utils"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
-
-[[package]]
-name = "pinned-aliasable"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d0f9ae89bf0ed03b69ac1f3f7ea2e6e09b4fa5448011df2e67d581c2b850b7b"
 
 [[package]]
 name = "pollster"
@@ -555,8 +508,25 @@ checksum = "e55a31a07efe53e1d6bbaac932c0866ed079972a615b962390f6f50289651f6a"
 dependencies = [
  "bab",
  "mproto",
- "probius-mproto",
+ "probius-mproto 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "spin",
+]
+
+[[package]]
+name = "probius"
+version = "0.0.8"
+dependencies = [
+ "bab",
+ "mproto",
+ "probius-mproto 0.1.3",
+ "spin",
+]
+
+[[package]]
+name = "probius-mproto"
+version = "0.1.3"
+dependencies = [
+ "mproto",
 ]
 
 [[package]]
@@ -693,7 +663,7 @@ dependencies = [
  "log",
  "modrpc",
  "mproto",
- "probius",
+ "probius 0.0.7",
  "refpool",
  "slab",
  "thiserror",

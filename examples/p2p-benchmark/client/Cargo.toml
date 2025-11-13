@@ -10,7 +10,6 @@ core_affinity = "0.8"
 modrpc = { path = "../../../crates/modrpc", features = ["tcp-transport"] }
 modrpc-executor = { path = "../../../crates/modrpc-executor", features = ["tokio"] }
 std-modrpc = { path = "../../../std-modrpc/rust" }
-tokio = "1"
-no-std-async = "1"
+tokio = { version = "1", features = ["sync"] }
 
 p2p-benchmark-modrpc = { path = "../p2p-benchmark-modrpc/rust" }

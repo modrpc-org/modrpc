@@ -4,7 +4,7 @@ use modrpc_executor::ModrpcExecutor;
 
 fn main() {
     let task_count = 10000;
-    let worker_count = 3;
+    let worker_count = 2;
     let iter_count = 30000000 / task_count / worker_count;
 
     let mut ex = modrpc_executor::TokioExecutor::new();
@@ -15,8 +15,8 @@ fn main() {
     let main_group = rt.new_worker_group(worker_count as u16);
     let (rt, _rt_shutdown) = rt.start::<modrpc_executor::TokioExecutor>();
 
-    let start_tasks = Arc::new(no_std_async::semaphore::Semaphore::new(0));
-    let finished_tasks = Arc::new(no_std_async::semaphore::Semaphore::new(0));
+    let start_tasks = Arc::new(tokio::sync::Barrier::new(task_count * worker_count));
+    let finished_tasks = Arc::new(tokio::sync::Semaphore::new(0));
 
     ex.run_until(async move {
         // Pin worker threads
@@ -66,9 +66,8 @@ fn main() {
             .unwrap();
 
         println!("Waiting for {} total tasks", task_count * worker_count);
-        start_tasks.release(task_count * worker_count);
         let now = std::time::Instant::now();
-        finished_tasks.acquire(task_count * worker_count).await;
+        let _ = finished_tasks.acquire_many((task_count * worker_count) as u32).await.unwrap();
 
         let elapsed = now.elapsed();
         let ns_per_iter = elapsed.as_nanos() / (worker_count * task_count * iter_count) as u128;
@@ -82,15 +81,15 @@ fn start_p2p_benchmark_client(
     cx: modrpc::RoleWorkerContext<p2p_benchmark_modrpc::P2pBenchmarkClientRole>,
     task_count: usize,
     iter_count: usize,
-    start_tasks: Arc<no_std_async::semaphore::Semaphore>,
-    finished_tasks: Arc<no_std_async::semaphore::Semaphore>,
+    start_tasks: Arc<tokio::sync::Barrier>,
+    finished_tasks: Arc<tokio::sync::Semaphore>,
 ) {
     for t in 0..task_count {
         let start_tasks = start_tasks.clone();
         let finished_tasks = finished_tasks.clone();
         let p2p_benchmark_client = cx.hooks.clone();
         cx.role_spawner().spawn(async move {
-            start_tasks.acquire(1).await;
+            start_tasks.wait().await;
 
             for i in 0..iter_count {
                 let req = (t as u64 * iter_count as u64) + i as u64;
@@ -98,7 +97,7 @@ fn start_p2p_benchmark_client(
                 assert_eq!(resp, Ok(req as u64 * 2 + 42));
             }
 
-            finished_tasks.release(1);
+            finished_tasks.add_permits(1);
         });
     }
 }
