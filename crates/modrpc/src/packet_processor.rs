@@ -66,6 +66,7 @@ enum Mutation {
 }
 
 pub struct PacketProcessor {
+    probius_component: probius::Component,
     handlers: localq::RwLock<HashMap<(u32, u32), NodeChain>>,
     existing_topics: RefCell<HashSet<(u32, u32)>>,
     mutations: UnsafeCell<Vec<Mutation>>,
@@ -83,6 +84,7 @@ impl PacketProcessor {
         inter_worker_senders: Vec<Option<localq::mpsc::Sender<Packet>>>,
     ) -> Self {
         PacketProcessor {
+            probius_component: probius::new_component("PacketProcessor"),
             handlers: localq::RwLock::new(HashMap::new()),
             existing_topics: RefCell::new(HashSet::new()),
             mutations: UnsafeCell::new(Vec::new()),
@@ -192,6 +194,7 @@ impl PacketProcessor {
         let handlers = self.handlers.read().await;
         let Some(node_chain) = handlers.get(&(header.plane_id, header.topic)) else {
             probius::trace_metric("no_handlers", 1);
+            probius::trace_branch_end();
             return;
         };
 
@@ -201,9 +204,11 @@ impl PacketProcessor {
             // aliases which would be UB.
             probius::trace_metric("recursive_handler", 1);
             let _ = self.local_worker_queue.send(packet.clone()).await;
+            probius::trace_branch_end();
             return;
         }
 
+        probius::trace_metric("packet_size", packet.len() as i64);
         probius::trace_branch_end();
 
         node_chain
@@ -291,9 +296,10 @@ impl PacketProcessor {
         drop(handlers);
 
         // SAFETY: `&mut self.mutations` never held across .await point.
-        let mutations = unsafe { &mut *self.mutations.get() };
-        if mutations.len() > 0 {
+        if unsafe { &mut *self.mutations.get() }.len() > 0 {
             let mut handlers = self.handlers.write().await;
+
+            let mutations = unsafe { &mut *self.mutations.get() };
             for mutation in mutations.drain(..) {
                 match mutation {
                     Mutation::AddNode {
@@ -354,7 +360,9 @@ impl PacketProcessor {
     ) {
         let tracer = if self.existing_topics.borrow_mut().insert((plane_id, topic)) {
             // This will be the first handler for this topic.
-            Some(probius::new_trace_source(topic_name))
+            self.probius_component.enter(|| {
+                Some(probius::new_trace_source(topic_name))
+            })
         } else {
             None
         };

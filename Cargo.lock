@@ -926,9 +926,9 @@ dependencies = [
 
 [[package]]
 name = "probius"
-version = "0.0.7"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e55a31a07efe53e1d6bbaac932c0866ed079972a615b962390f6f50289651f6a"
+checksum = "836f2c5000119fd93bf2fd747b62159ee0dd65d200622bbb5a655acaa70f00da"
 dependencies = [
  "bab",
  "mproto",

@@ -9,7 +9,7 @@ pub use endpoint_proto::{
 pub use interface_builder::{InterfaceBuilder, InterfaceEvent};
 pub use packet_sender::{MultiChannelSender, PacketSender, SingleChannelSender};
 pub use role::{InterfaceRole, InterfaceSchema, RoleSpawner, RoleStartFn, RoleWorkerContext};
-pub use role_setup::{AsyncHandler, EventRxBuilder, EventTx, RoleSetup, add_topic_subscription};
+pub use role_setup::{EventRxBuilder, EventTx, RoleSetup, add_topic_subscription};
 pub use rt::{
     RoleConfig, RuntimeBuilder, RuntimeHandle, StartRoleHandle, TopicChannels, WorkerGroup,
     WorkerHandle,

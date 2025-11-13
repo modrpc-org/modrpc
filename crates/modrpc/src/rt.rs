@@ -236,72 +236,72 @@ impl RuntimeBuilder {
                 let join_handle = std::thread::Builder::new()
                     .name(format!("worker-{}", worker_id.0))
                     .spawn(move || {
-                        let mut ex = E::new();
-                        // TODO configurable capacity
-                        let (local_packet_tx, local_packet_rx) = localq::mpsc::channel(64);
-                        let locals = Rc::new(RefCell::new(LocalContextMap::new()));
-
-                        let shutdown_signal = rt.inner.worker_handles[worker_index as usize]
-                            .shutdown_signal
-                            .clone();
-
-                        let inter_worker_batcher_senders = build_inter_worker_batchers(
-                            &WorkerSpawner {
-                                spawner: ex.spawner(),
-                                shutdown_signal: shutdown_signal.clone(),
-                                interval_fn: WorkerContext::interval_loop::<E>,
-                            },
-                            worker_id,
-                            max_inter_worker_batch_size,
-                            &inter_worker_senders,
-                        );
-                        let pp = Rc::new(PacketProcessor::new(
-                            local_packet_tx.clone(),
-                            inter_worker_batcher_senders,
-                        ));
-
-                        let worker_context = WorkerContext::new::<E>(
-                            rt.clone(),
-                            ex.spawner(),
-                            shutdown_signal.clone(),
-                            worker_id,
-                            worker_count,
-                            pp,
-                            local_packet_tx,
-                            locals,
-                            globals,
-                        );
-
-                        let map_worker_context = unsafe {
-                            &mut *rt.inner.worker_contexts[thid::ThreadId::current().as_usize()]
-                                .get()
-                        };
-                        map_worker_context.write(worker_context.clone());
-
-                        spawn_worker::<E>(
-                            worker_context.clone(),
-                            local_packet_rx,
-                            command_rx,
-                            inter_rx,
-                        );
-
-                        startup_done_tx
-                            .send(())
-                            .expect("modrpc::RuntimeBuilder::start worker startup oneshot send");
-
                         probius::enter_component(&format!("worker-{}", worker_id.0), move || {
+                            let mut ex = E::new();
+                            // TODO configurable capacity
+                            let (local_packet_tx, local_packet_rx) = localq::mpsc::channel(64);
+                            let locals = Rc::new(RefCell::new(LocalContextMap::new()));
+
+                            let shutdown_signal = rt.inner.worker_handles[worker_index as usize]
+                                .shutdown_signal
+                                .clone();
+
+                            let inter_worker_batcher_senders = build_inter_worker_batchers(
+                                &WorkerSpawner {
+                                    spawner: ex.spawner(),
+                                    shutdown_signal: shutdown_signal.clone(),
+                                    interval_fn: WorkerContext::interval_loop::<E>,
+                                },
+                                worker_id,
+                                max_inter_worker_batch_size,
+                                &inter_worker_senders,
+                            );
+                            let pp = Rc::new(PacketProcessor::new(
+                                local_packet_tx.clone(),
+                                inter_worker_batcher_senders,
+                            ));
+
+                            let worker_context = WorkerContext::new::<E>(
+                                rt.clone(),
+                                ex.spawner(),
+                                shutdown_signal.clone(),
+                                worker_id,
+                                worker_count,
+                                pp,
+                                local_packet_tx,
+                                locals,
+                                globals,
+                            );
+
+                            let map_worker_context = unsafe {
+                                &mut *rt.inner.worker_contexts[thid::ThreadId::current().as_usize()]
+                                    .get()
+                            };
+                            map_worker_context.write(worker_context.clone());
+
+                            spawn_worker::<E>(
+                                worker_context.clone(),
+                                local_packet_rx,
+                                command_rx,
+                                inter_rx,
+                            );
+
+                            startup_done_tx
+                                .send(())
+                                .expect("modrpc::RuntimeBuilder::start worker startup oneshot send");
+
                             // TODO this is not sufficient - need to add a local semaphore to wait
                             // for all spawned tasks to be polled to completion.
                             ex.run_until(shutdown_signal.wait_owned());
-                        });
 
-                        // Drop RuntimeHandle worker_contexts entry
-                        unsafe {
-                            let map_worker_context = &mut *rt.inner.worker_contexts
-                                [thid::ThreadId::current().as_usize()]
-                            .get();
-                            map_worker_context.assume_init_drop();
-                        }
+                            // Drop RuntimeHandle worker_contexts entry
+                            unsafe {
+                                let map_worker_context = &mut *rt.inner.worker_contexts
+                                    [thid::ThreadId::current().as_usize()]
+                                .get();
+                                map_worker_context.assume_init_drop();
+                            }
+                        });
                     })
                     .expect("spawn modrpc worker thread");
 

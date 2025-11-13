@@ -67,7 +67,7 @@ pub fn spawn_load_balancer(
     // Spawn task to pull packets from shared mpmc queue and put them in the local queue.
     let rx_burst_size = config.rx_burst_size;
     setup.worker_context().spawn_traced(
-        &object_path,
+        &format!("lb_relay:{object_path}"),
         core::time::Duration::from_millis(1000),
         async move |tracer| {
             let mut overflow: Vec<MaybeUninit<SendPacket>> =

@@ -18,7 +18,7 @@ web-ws-transport = ["dep:gloo-net"]
 
 [dependencies]
 futures-lite = "1"
-futures-util = { version = "0.3", default-features = false, features = ["sink"] }
+futures-util = { version = "0.3", default-features = false, features = ["std", "sink"] }
 hashbrown = "0.15"
 oneshot = "0.1"
 pollster = "0.3"

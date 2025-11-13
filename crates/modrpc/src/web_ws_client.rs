@@ -65,7 +65,8 @@ where
             cx.raw_spawner().spawn(async move {
                 transport_shutdown_signal.wait().await;
                 role_shutdown_signal.notify();
-            });
+            })
+            .expect("spawn modrpc web-ws transport shutdown waiter");
         });
 
     Ok(WebSocketConnection {

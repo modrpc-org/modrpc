@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use crate::{
     ContextClass, Packet, RoleSpawner,
     context_map::ModrpcContextTag,
@@ -158,7 +156,7 @@ pub struct EventTx<T> {
     packet_sender: PacketSender,
     plane_id: u32,
     topic: u32,
-    _payload_type: std::marker::PhantomData<T>,
+    _payload_type: core::marker::PhantomData<T>,
 }
 
 impl<T: mproto::Encode> EventTx<T> {
@@ -167,7 +165,7 @@ impl<T: mproto::Encode> EventTx<T> {
             packet_sender,
             plane_id,
             topic,
-            _payload_type: std::marker::PhantomData,
+            _payload_type: core::marker::PhantomData,
         }
     }
 
@@ -204,7 +202,7 @@ impl<T: mproto::Encode> EventTx<T> {
             packet_sender: self.packet_sender,
             plane_id: self.plane_id,
             topic: self.topic,
-            _payload_type: std::marker::PhantomData,
+            _payload_type: core::marker::PhantomData,
         }
     }
 }
@@ -224,8 +222,8 @@ impl<T> PartialEq for EventTx<T> {
 }
 impl<T> Eq for EventTx<T> {}
 
-impl<T> std::hash::Hash for EventTx<T> {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+impl<T> core::hash::Hash for EventTx<T> {
+    fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
         self.topic.hash(state);
         self.packet_sender.id().hash(state);
     }
@@ -237,7 +235,7 @@ impl<T> Clone for EventTx<T> {
             packet_sender: self.packet_sender.clone(),
             plane_id: self.plane_id,
             topic: self.topic,
-            _payload_type: std::marker::PhantomData,
+            _payload_type: core::marker::PhantomData,
         }
     }
 }
@@ -310,25 +308,6 @@ pub async fn handle_untyped_async(
             })
             .await;
     }
-}
-
-pub trait AsyncHandler {
-    type Input<'a>: mproto::Decode<'a>
-    where
-        Self: 'a;
-    type Context<'a>
-    where
-        Self: 'a;
-    type Output;
-    type Future<'a>: Future<Output = Self::Output> + 'a
-    where
-        Self: 'a;
-
-    fn call<'a>(
-        &'a mut self,
-        context: Self::Context<'a>,
-        input: Self::Input<'a>,
-    ) -> Self::Future<'a>;
 }
 
 #[must_use]
@@ -444,7 +423,7 @@ impl<T: mproto::Owned> EventRxBuilder<T> {
         let (queue_tx, queue_rx) = localq::mpsc::channel(64);
 
         setup.worker_context().spawn_traced(
-            &self.object_path,
+            &format!("queued:{}", self.object_path),
             core::time::Duration::from_millis(1000),
             async move |tracer| handle_events_async(tracer, queue_rx, handler).await,
         );

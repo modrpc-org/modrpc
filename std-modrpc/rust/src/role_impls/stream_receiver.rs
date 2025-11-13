@@ -31,7 +31,7 @@ impl<T: mproto::Owned> StreamReceiverBuilder<T> {
         }
     }
 
-    pub fn build<H>(
+    /*pub fn build<H>(
         self,
         setup: &RoleSetup,
         mut handler: H,
@@ -128,5 +128,5 @@ impl<T: mproto::Owned> StreamReceiverBuilder<T> {
             })
             // TODO allow caller to specify load-balance vs subscribe?
             .subscribe();
-    }
+    }*/
 }

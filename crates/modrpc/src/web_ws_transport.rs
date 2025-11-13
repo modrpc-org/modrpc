@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use futures_util::{SinkExt, StreamExt};
 use gloo_net::websocket::{Message, futures::WebSocket};
 
@@ -24,7 +22,7 @@ impl TransportBuilder for WebSocketTransport {
             panic!("gloo_net WebSocket modrpc transport requires a local worker.");
         };
 
-        let (mut ws_tx, ws_rx) = self.websocket.split();
+        let (mut ws_tx, ws_rx) = <WebSocket as StreamExt>::split(self.websocket);
 
         let (writer_flush_sender, mut writer_flush_receiver) = bab::new_writer_flusher();
 
