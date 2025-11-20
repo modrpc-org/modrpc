@@ -12,8 +12,8 @@ fn main() {
     let _guard = ex.tokio_runtime().enter();
 
     let mut rt = modrpc::RuntimeBuilder::new_no_local();
+    let client_group = rt.new_worker_group(4);
     let main_group = rt.new_worker_group(2);
-    let client_group = rt.new_worker_group(3);
     let (rt, rt_shutdown) = rt
         .start::<modrpc_executor::TokioExecutor>();
 
@@ -40,15 +40,15 @@ fn main() {
         // Use separate buffer pools for client and server to avoid one being able to starve the
         // other of buffers.
         let server_transport = rt.add_transport(modrpc::LocalTransport {
-            buffer_size: 8192,
-            buffer_pool_batches: 8,
-            buffer_pool_batch_size: 8,
+            buffer_size: 65536,
+            buffer_pool_batches: 16,
+            buffer_pool_batch_size: 16,
         })
         .await;
         let client_transport = rt.add_transport(modrpc::LocalTransport {
-            buffer_size: 8192,
-            buffer_pool_batches: 8,
-            buffer_pool_batch_size: 8,
+            buffer_size: 65536,
+            buffer_pool_batches: 16,
+            buffer_pool_batch_size: 16,
         })
         .await;
 
@@ -112,9 +112,11 @@ fn main() {
 
                         for i in 0..task_request_count {
                             let start = Instant::now();
+
                             let req = (t as u32 * task_request_count as u32) + i as u32;
                             let resp = foo_client.foo_the_bar.call(req).await;
                             assert_eq!(resp, Ok(req as u64 * 2 + 42));
+
                             let latency = start.elapsed();
                             sum_latency += latency;
                             worst_latency = std::cmp::max(worst_latency, latency);
@@ -125,8 +127,8 @@ fn main() {
                         println!(
                             "Finished task worker={:?} task={} avg_latency={}ns worst_latency={}us",
                             worker_id, t,
-                            worst_latency.as_micros(),
                             sum_latency.as_nanos() / task_request_count as u128,
+                            worst_latency.as_micros(),
                         );
                     });
                 }
@@ -176,6 +178,7 @@ pub struct FooTheBarHandler {
 }
 
 impl FooTheBarHandler {
+    #[inline]
     async fn call_replier(
         &mut self,
         mut cx: std_modrpc::RequestContext<'_, Result<u64, String>>,

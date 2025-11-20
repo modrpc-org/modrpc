@@ -22,7 +22,8 @@ impl TcpServer {
     pub async fn accept<Role: InterfaceRole>(
         &self,
         rt: &RuntimeHandle,
-        buffer_pool: HeapBufferPool,
+        in_buffer_pool: HeapBufferPool,
+        out_buffer_pool: HeapBufferPool,
         worker_id: WorkerId,
         worker_group: Option<WorkerGroup>,
         mut stream: tokio::net::TcpStream,
@@ -43,7 +44,8 @@ impl TcpServer {
             .add_transport(TcpTransport {
                 worker_id,
                 stream,
-                buffer_pool,
+                in_buffer_pool,
+                out_buffer_pool,
             })
             .await;
 
@@ -72,7 +74,8 @@ impl TcpServer {
     pub async fn accept_local<Role: InterfaceRole>(
         &self,
         rt: &RuntimeHandle,
-        buffer_pool: HeapBufferPool,
+        in_buffer_pool: HeapBufferPool,
+        out_buffer_pool: HeapBufferPool,
         mut stream: tokio::net::TcpStream,
         start_fn: impl RoleStartFn<Role>,
         config: Role::Config,
@@ -91,7 +94,8 @@ impl TcpServer {
             .add_transport(TcpTransport {
                 worker_id: WorkerId::local(),
                 stream,
-                buffer_pool,
+                in_buffer_pool,
+                out_buffer_pool,
             })
             .await;
 
@@ -142,7 +146,8 @@ pub struct TcpConnection<Role: InterfaceRole> {
 
 pub async fn tcp_connect<Role: InterfaceRole>(
     rt: &RuntimeHandle,
-    buffer_pool: HeapBufferPool,
+    in_buffer_pool: HeapBufferPool,
+    out_buffer_pool: HeapBufferPool,
     worker_id: WorkerId,
     config: Role::Config,
     mut stream: tokio::net::TcpStream,
@@ -163,7 +168,8 @@ where
         .add_transport(TcpTransport {
             worker_id,
             stream,
-            buffer_pool,
+            in_buffer_pool,
+            out_buffer_pool,
         })
         .await;
 
@@ -190,7 +196,8 @@ where
 
 pub async fn tcp_connect_builder<Role: InterfaceRole, R>(
     rt: &RuntimeHandle,
-    buffer_pool: HeapBufferPool,
+    in_buffer_pool: HeapBufferPool,
+    out_buffer_pool: HeapBufferPool,
     worker_id: WorkerId,
     config: Role::Config,
     mut stream: tokio::net::TcpStream,
@@ -212,7 +219,8 @@ where
         .add_transport(TcpTransport {
             worker_id,
             stream,
-            buffer_pool,
+            in_buffer_pool,
+            out_buffer_pool,
         })
         .await;
 

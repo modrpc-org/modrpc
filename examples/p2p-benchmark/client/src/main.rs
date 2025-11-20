@@ -3,14 +3,15 @@ use std::sync::Arc;
 use modrpc_executor::ModrpcExecutor;
 
 fn main() {
-    let task_count = 10000;
-    let worker_count = 2;
+    let task_count = 5000;
+    let worker_count = 3;
     let iter_count = 30000000 / task_count / worker_count;
 
     let mut ex = modrpc_executor::TokioExecutor::new();
     let _guard = ex.tokio_runtime().enter();
 
-    let buffer_pool = modrpc::HeapBufferPool::new(65536, 8, 8);
+    let in_buffer_pool = modrpc::HeapBufferPool::new(65536, 8, 8);
+    let out_buffer_pool = modrpc::HeapBufferPool::new(65536, 8, 8);
     let mut rt = modrpc::RuntimeBuilder::new_with_local(ex.spawner());
     let main_group = rt.new_worker_group(worker_count as u16);
     let (rt, _rt_shutdown) = rt.start::<modrpc_executor::TokioExecutor>();
@@ -36,7 +37,8 @@ fn main() {
         let (_endpoint, _transport, _p2p_benchmark_client) =
             modrpc::tcp_connect_builder::<p2p_benchmark_modrpc::P2pBenchmarkClientRole, _>(
                 &rt,
-                buffer_pool.clone(),
+                in_buffer_pool.clone(),
+                out_buffer_pool.clone(),
                 modrpc::WorkerId::local(),
                 p2p_benchmark_modrpc::P2pBenchmarkClientConfig { },
                 stream,

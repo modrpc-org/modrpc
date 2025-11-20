@@ -4,7 +4,8 @@ fn main() {
     let mut ex = modrpc_executor::TokioExecutor::new();
     let _guard = ex.tokio_runtime().enter();
 
-    let buffer_pool = modrpc::HeapBufferPool::new(65536, 8, 8);
+    let in_buffer_pool = modrpc::HeapBufferPool::new(65536, 8, 8);
+    let out_buffer_pool = modrpc::HeapBufferPool::new(65536, 8, 8);
     let rt = modrpc::RuntimeBuilder::new_with_local(ex.spawner());
     let (rt, _rt_shutdown) = rt.start::<modrpc_executor::TokioExecutor>();
 
@@ -34,7 +35,8 @@ fn main() {
 
             let _ = tcp_server.accept_local::<p2p_benchmark_modrpc::P2pBenchmarkServerRole>(
                 &rt,
-                buffer_pool.clone(),
+                in_buffer_pool.clone(),
+                out_buffer_pool.clone(),
                 stream,
                 start_p2p_benchmark,
                 p2p_benchmark_modrpc::P2pBenchmarkServerConfig { },

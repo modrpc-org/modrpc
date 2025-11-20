@@ -8,7 +8,8 @@ use crate::{
 };
 
 pub struct TcpTransport {
-    pub buffer_pool: HeapBufferPool,
+    pub in_buffer_pool: HeapBufferPool,
+    pub out_buffer_pool: HeapBufferPool,
     pub worker_id: WorkerId,
     pub stream: tokio::net::TcpStream,
 }
@@ -24,7 +25,8 @@ impl TransportBuilder for TcpTransport {
             .get_worker(self.worker_id)
             .run_once({
                 let shutdown_signal = shutdown_signal.clone();
-                let buffer_pool = self.buffer_pool.clone();
+                let in_buffer_pool = self.in_buffer_pool;
+                let out_buffer_pool = self.out_buffer_pool.clone();
                 move |worker_cx| {
                     let mut bundle_header_buf = [0u8; PacketBundle::BASE_LEN];
 
@@ -33,7 +35,6 @@ impl TransportBuilder for TcpTransport {
 
                     // Spawn task to flush egress packets
                     worker_cx.spawn_traced("tcp-tx", core::time::Duration::from_millis(1000), {
-                        let buffer_pool = buffer_pool.clone();
                         let shutdown_notifier = shutdown_signal.clone();
                         let shutdown_waiter = shutdown_signal.clone();
                         async move |tracer| {
@@ -89,7 +90,7 @@ impl TransportBuilder for TcpTransport {
                                     shutdown_notifier.notify();
                                 },
                                 async move {
-                                    let _buffer_pool_thread_guard = buffer_pool.register_thread();
+                                    let _buffer_pool_thread_guard = out_buffer_pool.register_thread();
                                     shutdown_waiter.wait().await;
                                 },
                             )
@@ -99,12 +100,12 @@ impl TransportBuilder for TcpTransport {
 
                     // Spawn task to receive ingress packets
                     let mut tcp_ingress =
-                        TcpIngress::new(tcp_read, buffer_pool.clone(), buffer_pool.buffer_size());
+                        TcpIngress::new(tcp_read, in_buffer_pool.clone(), in_buffer_pool.buffer_size());
                     worker_cx.spawn_traced("tcp-rx", core::time::Duration::from_millis(1000), {
                         let shutdown_notifier = shutdown_signal.clone();
                         let shutdown_waiter = shutdown_signal.clone();
                         let process_packet_fn = worker_cx.get_packet_processor();
-                        let buffer_pool = buffer_pool.clone();
+                        let max_buffer_size = in_buffer_pool.buffer_size();
                         async move |tracer| {
                             future::or(
                                 async move {
@@ -122,9 +123,7 @@ impl TransportBuilder for TcpTransport {
                                             &mut shatter_offsets,
                                             &mut shatter_out_packets,
                                         );
-                                        assert!(
-                                            header.length as usize <= buffer_pool.buffer_size()
-                                        );
+                                        assert!(header.length as usize <= max_buffer_size);
 
                                         tracer.trace(|| {
                                             probius::trace_label("tcp-rx");
@@ -163,7 +162,10 @@ impl TransportBuilder for TcpTransport {
 
                                     shutdown_notifier.notify();
                                 },
-                                shutdown_waiter.wait_owned(),
+                                async move {
+                                    let _buffer_pool_thread_guard = in_buffer_pool.register_thread();
+                                    shutdown_waiter.wait().await;
+                                },
                             )
                             .await
                         }
@@ -176,7 +178,7 @@ impl TransportBuilder for TcpTransport {
 
         TransportHandle {
             shutdown_signal,
-            buffer_pool: self.buffer_pool,
+            buffer_pool: self.out_buffer_pool,
             writer_config: WriterConfig::LocalFlush {
                 writer_flush_sender,
             },
