@@ -14,7 +14,7 @@ pub struct StreamSender<T> {
 }
 
 impl<T: mproto::Owned> StreamSender<T> {
-    pub async fn send<U>(&mut self, payload: U)
+    pub async fn send<U>(&self, payload: U)
         where U: mproto::Encode + mproto::Compatible<T>
     {
         let seq = self.state.next_seq.get();

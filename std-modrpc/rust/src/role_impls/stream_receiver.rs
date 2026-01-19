@@ -220,7 +220,7 @@ mod test {
                     builder.build(cx.setup);
                 });
 
-            let mut stream_sender = stream_sender.unwrap();
+            let stream_sender = stream_sender.unwrap();
             let stream_receiver = stream_receiver.unwrap();
 
             stream_sender.send("asdf").await;
@@ -240,9 +240,13 @@ mod test {
 
             assert!(matches!(subscription.try_next(), Ok(None)));
 
+            // Test StreamSubscription::drop
             let subscriptions = stream_receiver.subscriptions.clone();
-            assert_eq!(subscriptions.stream_states.borrow().len(), 1);
+            let subscription2 = stream_receiver.subscribe(None);
+            assert_eq!(subscriptions.stream_states.borrow().len(), 2);
             drop(subscription);
+            assert_eq!(subscriptions.stream_states.borrow().len(), 1);
+            drop(subscription2);
             assert_eq!(subscriptions.stream_states.borrow().len(), 0);
         });
     }
