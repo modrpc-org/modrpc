@@ -17,6 +17,9 @@ probius = "0.0"
 mproto = { version = "0.2", default-features = false }
 modrpc = { version = "0.0", path = "../../crates/modrpc", default-features = false }
 
+[dev-dependencies]
+modrpc-executor = { version = "0.0", path = "../../crates/modrpc-executor", features = ["futures-executor"] }
+
 [features]
 default = ["std"]
 std = ["mproto/std"]

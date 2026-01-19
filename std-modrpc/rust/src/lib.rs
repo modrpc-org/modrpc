@@ -5,6 +5,7 @@ pub use role_impls::*;
 
 mod interface;
 mod proto;
+mod receive_stream;
 mod request_tracker;
 mod roles;
 mod role_impls;

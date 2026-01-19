@@ -1,14 +1,104 @@
-use crate::proto::{StreamInitState, StreamItemLazy, StreamReceiverConfig};
-use std::collections::BinaryHeap;
+use std::{
+    cell::RefCell,
+    rc::Rc,
+};
 use modrpc::RoleSetup;
+
+use crate::{
+    proto::{StreamInitState, StreamItem, StreamItemLazy, StreamReceiverConfig},
+    receive_stream::{ReceiveStream, StreamState},
+};
 
 #[derive(Clone)]
 pub struct StreamReceiver<T> {
+    subscriptions: Rc<Subscriptions>,
     _phantom: core::marker::PhantomData<T>,
+}
+
+impl<T: mproto::Owned> StreamReceiver<T> {
+    pub fn subscribe(&self, next_seq: Option<u64>) -> StreamSubscription<T> {
+        let receive_stream = ReceiveStream::new(next_seq);
+        self.subscriptions.stream_states.borrow_mut().push(receive_stream.stream_state().clone());
+        StreamSubscription {
+            receive_stream,
+            _phantom: core::marker::PhantomData,
+        }
+    }
+}
+
+pub struct StreamSubscription<T> {
+    receive_stream: ReceiveStream,
+    _phantom: core::marker::PhantomData<T>,
+}
+
+impl<T: mproto::Owned> StreamSubscription<T> {
+    pub async fn next(&mut self) -> mproto::DecodeResult<T> {
+        use mproto::BaseLen;
+
+        let packet = self.receive_stream.next_packet().await;
+
+        let stream_item: StreamItemLazy<T> = mproto::decode_value(
+            &packet.as_ref()[modrpc::TransmitPacket::BASE_LEN..]
+        )?;
+        let owned_result = stream_item.payload().map(|i| T::lazy_to_owned(i))??;
+
+        Ok(owned_result)
+    }
+
+    pub async fn next_lazy(&mut self)
+        -> mproto::DecodeResult<mproto::LazyBuf<T, modrpc::Packet>>
+    {
+        use mproto::BaseLen;
+
+        let packet = self.receive_stream.next_packet().await;
+        packet.advance(modrpc::TransmitPacket::BASE_LEN);
+
+        let stream_item: mproto::LazyBuf<StreamItem<T>, _> = mproto::LazyBuf::new(packet);
+        // TODO LazyBuf::try_map
+        let payload = stream_item.map(|s| s.payload().unwrap());
+
+        Ok(payload)
+    }
+
+    pub fn try_next(&mut self) -> mproto::DecodeResult<Option<T>> {
+        use mproto::BaseLen;
+
+        let Some(packet) = self.receive_stream.try_next_packet() else {
+            return Ok(None);
+        };
+        packet.advance(modrpc::TransmitPacket::BASE_LEN);
+
+        let stream_item: StreamItemLazy<T> = mproto::decode_value(&packet)?;
+        let payload = stream_item.payload().and_then(|i| T::lazy_to_owned(i))?;
+
+        Ok(Some(payload))
+    }
+
+    pub fn try_next_lazy(&mut self)
+        -> mproto::DecodeResult<Option<mproto::LazyBuf<T, modrpc::Packet>>>
+    {
+        use mproto::BaseLen;
+
+        let Some(packet) = self.receive_stream.try_next_packet() else {
+            return Ok(None);
+        };
+        packet.advance(modrpc::TransmitPacket::BASE_LEN);
+
+        let stream_item: mproto::LazyBuf<StreamItem<T>, _> = mproto::LazyBuf::new(packet);
+        // TODO LazyBuf::try_map
+        let payload = stream_item.map(|s| s.payload().unwrap());
+
+        Ok(Some(payload))
+    }
+}
+
+struct Subscriptions {
+    stream_states: RefCell<Vec<Rc<StreamState>>>,
 }
 
 pub struct StreamReceiverBuilder<T> {
     stubs: crate::StreamReceiverStubs<T>,
+    subscriptions: Rc<Subscriptions>,
 }
 
 impl<T: mproto::Owned> StreamReceiverBuilder<T> {
@@ -19,7 +109,12 @@ impl<T: mproto::Owned> StreamReceiverBuilder<T> {
         _config: &StreamReceiverConfig,
         _init: StreamInitState,
     ) -> Self {
-        Self { stubs }
+        Self {
+            stubs,
+            subscriptions: Rc::new(Subscriptions {
+                stream_states: RefCell::new(Vec::new()),
+            }),
+        }
     }
 
     pub fn create_handle(
@@ -27,106 +122,114 @@ impl<T: mproto::Owned> StreamReceiverBuilder<T> {
         _setup: &RoleSetup,
     ) -> crate::StreamReceiver<T> {
         crate::StreamReceiver {
+            subscriptions: self.subscriptions.clone(),
             _phantom: core::marker::PhantomData,
         }
     }
 
-    /*pub fn build<H>(
+    pub fn build(
         self,
         setup: &RoleSetup,
-        mut handler: H,
-    )
-        where
-            // TODO constrain handler payload type to be compatible with stream's payload type.
-            for<'a> H: modrpc::AsyncHandler<Context<'a> = modrpc::EndpointAddr> + 'static,
-            for<'a> H::Input<'a>: mproto::Lazy<'a>,
-    {
-        use std::cmp::Reverse;
+    ) {
         use mproto::BaseLen;
 
-        #[allow(type_alias_bounds)]
-        type HandlerInputOwned<'a, H: modrpc::AsyncHandler> =
-            <H::Input<'a> as mproto::Lazy<'a>>::Owned;
+        let subscriptions = self.subscriptions;
+        self.stubs.item.inline_untyped(setup, move |_source, packet| {
+            let stream_item_bytes = &packet[modrpc::TransmitPacket::BASE_LEN..];
+            let Ok(stream_item) =
+                mproto::decode_value::<StreamItemLazy<T>>(stream_item_bytes)
+            else {
+                return;
+            };
+            let Ok(seq) = stream_item.seq() else {
+                return;
+            };
 
-        // Wrapper for StreamItem that is Eq + PartialEq + Ord + PartialOrd
-        struct Item { seq: u64, packet: modrpc::Packet }
-        impl Item { fn sort_key(&self) -> u64 { self.seq} }
-        impl PartialEq for Item {
-            fn eq(&self, other: &Self) -> bool { self.sort_key().eq(&other.sort_key()) }
-        }
-        impl Eq for Item { }
-        impl PartialOrd for Item {
-            fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> { self.sort_key().partial_cmp(&other.sort_key()) }
-        }
-        impl Ord for Item {
-            fn cmp(&self, other: &Self) -> std::cmp::Ordering { self.sort_key().cmp(&other.sort_key()) }
-        }
-
-        let mut heap = BinaryHeap::new();
-        // TODO configurable capacity
-        let (local_queue_tx, mut local_queue_rx) = localq::mpsc::channel::<modrpc::Packet>(64);
-
-        setup.role_spawner().spawn(async move {
-            loop {
-                let Ok(packet) = local_queue_rx.recv().await else {
-                    break;
-                };
-
-                // TODO decode error handling - at least log it?
-
-                // Decode packet header
-                let Ok(packet_header) =
-                    mproto::decode_value::<modrpc::TransmitPacket>(packet.as_ref())
-                else { continue; };
-
-                let stream_item_offset = modrpc::TransmitPacket::BASE_LEN;
-                let source = packet_header.source;
-
-                // Decode payload
-                let Ok(stream_item) =
-                    mproto::decode_value::<StreamItemLazy<HandlerInputOwned<H>>>(
-                        &packet.as_ref()[stream_item_offset..]
-                    )
-                else { continue; };
-
-                let Ok(payload) = stream_item.payload() else { continue; };
-
-                // Handle event
-                handler.call(source.clone(), payload).await;
+            for stream_state in &mut *subscriptions.stream_states.borrow_mut() {
+                let _stream_is_done = stream_state.handle_item(seq, false, packet.clone());
             }
-        });
+        })
+        .subscribe();
+    }
+}
 
-        self.stubs.item
-            .inline_untyped(setup, move |_source, packet| {
-                let seq = {
-                    let Ok(stream_item) =
-                        mproto::decode_value::<StreamItemLazy<HandlerInputOwned<H>>>(&packet)
-                    else {
-                        return;
-                    };
+#[cfg(test)]
+mod test {
+    use modrpc_executor::ModrpcExecutor;
+    use crate::{
+        StreamInitState,
+        StreamSenderBuilder,
+        StreamSenderConfig,
+        StreamSenderRole,
+        StreamReceiverConfig,
+        StreamReceiverRole,
+    };
+    use super::*;
 
-                    let Ok(seq) = stream_item.seq() else {
-                        return;
-                    };
+    #[test]
+    fn test_stream_receiver() {
+        let mut ex = modrpc_executor::FuturesExecutor::new();
+        let (rt, _rt_shutdown) = modrpc::RuntimeHandle::single_threaded(&mut ex);
 
-                    seq
-                };
-
-                // Reverse order so that heap produces item with smallest seq.
-                heap.push(Reverse(Item { seq, packet: packet.clone() }));
-
-                let mut next_seq = 0;
-                while let Some(Reverse(stream_item)) = heap.peek() {
-                    if stream_item.seq != next_seq { break; }
-                    next_seq += 1;
-
-                    // Unwrap guaranteed to succeed.
-                    let Reverse(stream_item) = heap.pop().unwrap();
-
-                    let _ = local_queue_tx.try_send(stream_item.packet);
-                }
+        ex.run_until(async move {
+            let transport = rt.add_transport(modrpc::LocalTransport {
+                buffer_size: 256,
+                buffer_pool_batches: 16,
+                buffer_pool_batch_size: 16,
             })
-            // TODO allow caller to specify load-balance vs subscribe?
-            .subscribe();
-    }*/
+            .await;
+
+            let mut stream_sender = None;
+            let _ =
+                rt.start_role::<StreamSenderRole<String>>(modrpc::RoleConfig {
+                    plane_id: 0,
+                    endpoint_addr: modrpc::EndpointAddr { endpoint: 0 },
+                    transport: transport.clone(),
+                    topic_channels: modrpc::TopicChannels::SingleChannel { channel_id: 0 },
+                    config: StreamSenderConfig { },
+                    init: StreamInitState { },
+                })
+                .local(|cx| {
+                    let builder = StreamSenderBuilder::new("stream_sender", cx.hooks.clone(), cx.stubs, cx.config, cx.init.clone());
+                    stream_sender = Some(builder.create_handle(cx.setup));
+                    builder.build(cx.setup);
+                });
+
+            let mut stream_receiver = None;
+            let _ =
+                rt.start_role::<StreamReceiverRole<String>>(modrpc::RoleConfig {
+                    plane_id: 0,
+                    endpoint_addr: modrpc::EndpointAddr { endpoint: 0 },
+                    transport: transport,
+                    topic_channels: modrpc::TopicChannels::SingleChannel { channel_id: 0 },
+                    config: StreamReceiverConfig { },
+                    init: StreamInitState { },
+                })
+                .local(|cx| {
+                    let builder = StreamReceiverBuilder::new("stream_receiver", cx.hooks.clone(), cx.stubs, cx.config, cx.init.clone());
+                    stream_receiver = Some(builder.create_handle(cx.setup));
+                    builder.build(cx.setup);
+                });
+
+            let mut stream_sender = stream_sender.unwrap();
+            let stream_receiver = stream_receiver.unwrap();
+
+            stream_sender.send("asdf").await;
+
+            // Passing None to subscribe will make it accept the first seq it sees as the next seq.
+            let mut subscription = stream_receiver.subscribe(None);
+
+            assert!(matches!(subscription.try_next(), Ok(None)));
+
+            stream_sender.send("foo").await;
+            stream_sender.send("bar").await;
+            stream_sender.send("baz").await;
+
+            assert_eq!(subscription.next().await.unwrap(), "foo");
+            assert_eq!(subscription.next().await.unwrap(), "bar");
+            assert_eq!(subscription.next().await.unwrap(), "baz");
+
+            assert!(matches!(subscription.try_next(), Ok(None)));
+        });
+    }
 }
