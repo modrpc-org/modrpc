@@ -176,13 +176,16 @@ where
 
         let role_name = core::any::type_name::<Role>()
             // Strip off rust module qualification
+            .split("<")
+            .next()
+            .unwrap()
             .rsplit("::")
             .next()
             .unwrap()
             // modrpc-codegen always generates interface role type names as
             // <interface name><role name>Role
             .strip_suffix("Role")
-            .unwrap();
+            .unwrap_or_else(|| core::any::type_name::<Role>());
         let mut setup = RoleSetup::new(
             role_name,
             role_spawner.clone(),
