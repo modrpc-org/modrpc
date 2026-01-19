@@ -21,6 +21,7 @@ impl<T: mproto::Owned> StreamReceiver<T> {
         self.subscriptions.stream_states.borrow_mut().push(receive_stream.stream_state().clone());
         StreamSubscription {
             receive_stream,
+            subscriptions: self.subscriptions.clone(),
             _phantom: core::marker::PhantomData,
         }
     }
@@ -28,7 +29,15 @@ impl<T: mproto::Owned> StreamReceiver<T> {
 
 pub struct StreamSubscription<T> {
     receive_stream: ReceiveStream,
+    subscriptions: Rc<Subscriptions>,
     _phantom: core::marker::PhantomData<T>,
+}
+
+impl<T> Drop for StreamSubscription<T> {
+    fn drop(&mut self) {
+        self.subscriptions.stream_states.borrow_mut()
+            .retain(|s| Rc::as_ptr(s) != Rc::as_ptr(self.receive_stream.stream_state()));
+    }
 }
 
 impl<T: mproto::Owned> StreamSubscription<T> {
@@ -230,6 +239,11 @@ mod test {
             assert_eq!(subscription.next().await.unwrap(), "baz");
 
             assert!(matches!(subscription.try_next(), Ok(None)));
+
+            let subscriptions = stream_receiver.subscriptions.clone();
+            assert_eq!(subscriptions.stream_states.borrow().len(), 1);
+            drop(subscription);
+            assert_eq!(subscriptions.stream_states.borrow().len(), 0);
         });
     }
 }
