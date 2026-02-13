@@ -72,7 +72,7 @@ impl<T: mproto::Owned> ReceiveMultiStream<T> {
         self.stream_id
     }
 
-    pub async fn next(&mut self) -> Result<Option<T>, ReceiveMultiStreamNextError> {
+    pub async fn next(&mut self) -> Result<T, ReceiveMultiStreamNextError> {
         use mproto::BaseLen;
 
         let packet = self.receive_stream.next_packet().await;
@@ -82,11 +82,12 @@ impl<T: mproto::Owned> ReceiveMultiStream<T> {
         )
         .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
 
-        let owned_result = stream_item.payload()
-            .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?
-            .map(|i| T::lazy_to_owned(i))
-            .transpose()
-            .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
+        let owned_result = T::lazy_to_owned(
+            stream_item.payload()
+                .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?
+                .ok_or(ReceiveMultiStreamNextError::Shutdown)?
+        )
+        .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
 
         Ok(owned_result)
     }
@@ -116,13 +117,14 @@ impl<T: mproto::Owned> ReceiveMultiStream<T> {
         )
         .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
 
-        let owned_result = stream_item.payload()
-            .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?
-            .map(|i| T::lazy_to_owned(i))
-            .transpose()
-            .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
+        let owned_result = T::lazy_to_owned(
+            stream_item.payload()
+                .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?
+                .ok_or(ReceiveMultiStreamNextError::Shutdown)?
+        )
+        .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
 
-        Ok(owned_result)
+        Ok(Some(owned_result))
     }
 
     pub fn with_try_next<R>(
@@ -222,8 +224,12 @@ impl<T: mproto::Owned> ReceiveMultiStream<T> {
 
     pub async fn collect(&mut self) -> Result<Vec<T>, ReceiveMultiStreamNextError> {
         let mut collected = Vec::new();
-        while let Some(item) = self.next().await? {
-            collected.push(item);
+        loop {
+            match self.next().await {
+                Ok(item) => { collected.push(item); Ok(()) }
+                Err(ReceiveMultiStreamNextError::Shutdown) => break,
+                Err(e) => Err(e),
+            }?;
         }
         Ok(collected)
     }
@@ -253,12 +259,13 @@ impl<E: std::fmt::Debug> From<ReceiveMultiStreamNextError> for MultiStreamTryCol
 impl<T: mproto::Owned, E: mproto::Owned + std::fmt::Debug> ReceiveMultiStream<Result<T, E>> {
     pub async fn try_collect(&mut self) -> Result<Vec<T>, MultiStreamTryCollectError<E>> {
         let mut collected = Vec::new();
-        while let Some(item) =
-            self.next().await?
-                .transpose()
-                .map_err(|e| MultiStreamTryCollectError::SenderError(e))?
-        {
-            collected.push(item);
+        loop {
+            match self.next().await {
+                Ok(Ok(item)) => { collected.push(item); Ok(()) }
+                Ok(Err(e)) => return Err(MultiStreamTryCollectError::SenderError(e.into())),
+                Err(ReceiveMultiStreamNextError::Shutdown) => break,
+                Err(e) => Err(e),
+            }?;
         }
         Ok(collected)
     }
