@@ -104,6 +104,27 @@ impl<T: mproto::Owned> ReceiveMultiStream<T> {
         Ok(stream_item.map(|s| s.payload().unwrap()))
     }
 
+    pub fn try_next(&mut self) -> Result<Option<T>, ReceiveMultiStreamNextError> {
+        use mproto::BaseLen;
+
+        let Some(packet) = self.receive_stream.try_next_packet() else {
+            return Ok(None);
+        };
+
+        let stream_item: MultiStreamItemLazy<T> = mproto::decode_value(
+            &packet.as_ref()[modrpc::TransmitPacket::BASE_LEN..]
+        )
+        .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
+
+        let owned_result = stream_item.payload()
+            .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?
+            .map(|i| T::lazy_to_owned(i))
+            .transpose()
+            .map_err(|e| ReceiveMultiStreamNextError::DecodeItem(e))?;
+
+        Ok(owned_result)
+    }
+
     pub fn with_try_next<R>(
         &mut self,
         f: impl FnOnce(Option<mproto::DecodeResult<Option<T::Lazy<'_>>>>) -> R,
