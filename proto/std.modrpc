@@ -49,8 +49,9 @@ interface Stream<T> @(Receiver, Sender) {
         private item: StreamItem<T>,
     }
 
-    impl @(Receiver) {
-        handler: async T -> void,
+    methods @(Receiver) {
+        try_next: void -> option<T>,
+        next: async void -> T,
     }
 
     methods @(Sender) {
