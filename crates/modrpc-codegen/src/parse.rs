@@ -456,7 +456,8 @@ fn qualified_identifier(i: &str) -> IResult<&str, QualifiedIdentifier> {
 
 // TODO Proper error type
 pub fn parse_schema(i: &str) -> Result<Schema, String> {
-    let (_, schema_items) = root(i).map_err(|e| e.to_string())?;
+    let schema_str = mproto_codegen::parse::strip_comments(i) + "\n";
+    let (_, schema_items) = root(&schema_str).map_err(|e| e.to_string())?;
 
     let mut schema = Schema {
         imports: Vec::new(),
@@ -495,22 +496,7 @@ pub fn parse_file(path: impl AsRef<std::path::Path>) -> Result<Schema, String> {
         return Err(format!("Failed to read file '{}': {e}", path.as_ref().display()));
     }
 
-    // Remove comments
-    let mut schema_str = file_str.lines()
-        .map(|line| {
-            if let Some(index) = line.find("//") {
-                // Return the slice from the start of the line up to the comment marker
-                &line[..index]
-            } else {
-                // If no comment is found, return the entire line
-                line
-            }
-        })
-        .collect::<Vec<&str>>()
-        .join("\n");
-    schema_str += "\n";
-
-    parse_schema(&schema_str)
+    parse_schema(&file_str)
 }
 
 #[cfg(test)]
