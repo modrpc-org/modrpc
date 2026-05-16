@@ -2856,3 +2856,360 @@ impl<'a> PartialEq for ByteStreamSenderConfigLazy<'a> {
         true
     }
 }
+
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
+pub struct MultiByteStreamInitState {}
+
+pub struct MultiByteStreamInitStateLazy<'a> {
+    buffer: &'a [u8],
+    offset: usize,
+}
+
+pub struct MultiByteStreamInitStateGen<> {}
+
+impl<> Compatible<MultiByteStreamInitState> for MultiByteStreamInitStateGen<> { }
+impl<> Compatible<MultiByteStreamInitStateGen<>> for MultiByteStreamInitState { }
+
+impl<> BaseLen for MultiByteStreamInitStateGen<> {
+    const BASE_LEN: usize = 0;
+}
+
+impl<> Encode for MultiByteStreamInitStateGen<> {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl Owned for MultiByteStreamInitState {
+    type Lazy<'a> = MultiByteStreamInitStateLazy<'a>;
+
+    fn lazy_to_owned(lazy: Self::Lazy<'_>) -> DecodeResult<Self> {
+        TryFrom::try_from(lazy)
+    }
+}
+
+impl<'a> Lazy<'a> for MultiByteStreamInitStateLazy<'a> {
+    type Owned = MultiByteStreamInitState;
+}
+
+impl<'a> Compatible<MultiByteStreamInitStateLazy<'a>> for MultiByteStreamInitStateLazy<'a> { }
+impl<'a> Compatible<MultiByteStreamInitStateLazy<'a>> for MultiByteStreamInitState { }
+impl Compatible<MultiByteStreamInitState> for MultiByteStreamInitState { }
+impl<'a> Compatible<MultiByteStreamInitState> for MultiByteStreamInitStateLazy<'a> { }
+
+impl<'a> MultiByteStreamInitStateLazy<'a> {}
+
+impl BaseLen for MultiByteStreamInitState {
+    const BASE_LEN: usize = 0;
+}
+
+impl Encode for MultiByteStreamInitState {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl<'a> Decode<'a> for MultiByteStreamInitState {
+    fn decode(_: &DecodeCursor<'a>) -> DecodeResult<Self> {
+
+        Ok(MultiByteStreamInitState {})
+    }
+}
+
+impl<'a> BaseLen for MultiByteStreamInitStateLazy<'a> {
+    const BASE_LEN: usize = 0;
+}
+
+impl<'a> Encode for MultiByteStreamInitStateLazy<'a> {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl<'a> Decode<'a> for MultiByteStreamInitStateLazy<'a> {
+    fn decode(cursor: &DecodeCursor<'a>) -> DecodeResult<Self> {
+        let offset = cursor.offset();
+        cursor.advance(Self::BASE_LEN);
+        Ok(MultiByteStreamInitStateLazy {
+            buffer: cursor.buffer(),
+            offset,
+        })
+    }
+}
+
+impl<'a> TryFrom<MultiByteStreamInitStateLazy<'a>> for MultiByteStreamInitState {
+    type Error = DecodeError;
+
+    fn try_from(other: MultiByteStreamInitStateLazy<'a>) -> Result<Self, Self::Error> {
+        let cursor = DecodeCursor::at_offset(other.buffer, other.offset);
+        Decode::decode(&cursor)
+    }
+}
+
+impl<'a> Copy for MultiByteStreamInitStateLazy<'a> { }
+
+impl<'a> Clone for MultiByteStreamInitStateLazy<'a> {
+    fn clone(&self) -> Self {
+        Self {
+            buffer: self.buffer,
+            offset: self.offset,
+        }
+    }
+}
+
+impl<'a> core::fmt::Debug for MultiByteStreamInitStateLazy<'a> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("MultiByteStreamInitStateLazy")
+            .finish()
+    }
+}
+
+impl<'a> PartialEq for MultiByteStreamInitStateLazy<'a> {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
+pub struct MultiByteStreamReceiverConfig {}
+
+pub struct MultiByteStreamReceiverConfigLazy<'a> {
+    buffer: &'a [u8],
+    offset: usize,
+}
+
+pub struct MultiByteStreamReceiverConfigGen<> {}
+
+impl<> Compatible<MultiByteStreamReceiverConfig> for MultiByteStreamReceiverConfigGen<> { }
+impl<> Compatible<MultiByteStreamReceiverConfigGen<>> for MultiByteStreamReceiverConfig { }
+
+impl<> BaseLen for MultiByteStreamReceiverConfigGen<> {
+    const BASE_LEN: usize = 0;
+}
+
+impl<> Encode for MultiByteStreamReceiverConfigGen<> {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl Owned for MultiByteStreamReceiverConfig {
+    type Lazy<'a> = MultiByteStreamReceiverConfigLazy<'a>;
+
+    fn lazy_to_owned(lazy: Self::Lazy<'_>) -> DecodeResult<Self> {
+        TryFrom::try_from(lazy)
+    }
+}
+
+impl<'a> Lazy<'a> for MultiByteStreamReceiverConfigLazy<'a> {
+    type Owned = MultiByteStreamReceiverConfig;
+}
+
+impl<'a> Compatible<MultiByteStreamReceiverConfigLazy<'a>> for MultiByteStreamReceiverConfigLazy<'a> { }
+impl<'a> Compatible<MultiByteStreamReceiverConfigLazy<'a>> for MultiByteStreamReceiverConfig { }
+impl Compatible<MultiByteStreamReceiverConfig> for MultiByteStreamReceiverConfig { }
+impl<'a> Compatible<MultiByteStreamReceiverConfig> for MultiByteStreamReceiverConfigLazy<'a> { }
+
+impl<'a> MultiByteStreamReceiverConfigLazy<'a> {}
+
+impl BaseLen for MultiByteStreamReceiverConfig {
+    const BASE_LEN: usize = 0;
+}
+
+impl Encode for MultiByteStreamReceiverConfig {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl<'a> Decode<'a> for MultiByteStreamReceiverConfig {
+    fn decode(_: &DecodeCursor<'a>) -> DecodeResult<Self> {
+
+        Ok(MultiByteStreamReceiverConfig {})
+    }
+}
+
+impl<'a> BaseLen for MultiByteStreamReceiverConfigLazy<'a> {
+    const BASE_LEN: usize = 0;
+}
+
+impl<'a> Encode for MultiByteStreamReceiverConfigLazy<'a> {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl<'a> Decode<'a> for MultiByteStreamReceiverConfigLazy<'a> {
+    fn decode(cursor: &DecodeCursor<'a>) -> DecodeResult<Self> {
+        let offset = cursor.offset();
+        cursor.advance(Self::BASE_LEN);
+        Ok(MultiByteStreamReceiverConfigLazy {
+            buffer: cursor.buffer(),
+            offset,
+        })
+    }
+}
+
+impl<'a> TryFrom<MultiByteStreamReceiverConfigLazy<'a>> for MultiByteStreamReceiverConfig {
+    type Error = DecodeError;
+
+    fn try_from(other: MultiByteStreamReceiverConfigLazy<'a>) -> Result<Self, Self::Error> {
+        let cursor = DecodeCursor::at_offset(other.buffer, other.offset);
+        Decode::decode(&cursor)
+    }
+}
+
+impl<'a> Copy for MultiByteStreamReceiverConfigLazy<'a> { }
+
+impl<'a> Clone for MultiByteStreamReceiverConfigLazy<'a> {
+    fn clone(&self) -> Self {
+        Self {
+            buffer: self.buffer,
+            offset: self.offset,
+        }
+    }
+}
+
+impl<'a> core::fmt::Debug for MultiByteStreamReceiverConfigLazy<'a> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("MultiByteStreamReceiverConfigLazy")
+            .finish()
+    }
+}
+
+impl<'a> PartialEq for MultiByteStreamReceiverConfigLazy<'a> {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
+pub struct MultiByteStreamSenderConfig {}
+
+pub struct MultiByteStreamSenderConfigLazy<'a> {
+    buffer: &'a [u8],
+    offset: usize,
+}
+
+pub struct MultiByteStreamSenderConfigGen<> {}
+
+impl<> Compatible<MultiByteStreamSenderConfig> for MultiByteStreamSenderConfigGen<> { }
+impl<> Compatible<MultiByteStreamSenderConfigGen<>> for MultiByteStreamSenderConfig { }
+
+impl<> BaseLen for MultiByteStreamSenderConfigGen<> {
+    const BASE_LEN: usize = 0;
+}
+
+impl<> Encode for MultiByteStreamSenderConfigGen<> {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl Owned for MultiByteStreamSenderConfig {
+    type Lazy<'a> = MultiByteStreamSenderConfigLazy<'a>;
+
+    fn lazy_to_owned(lazy: Self::Lazy<'_>) -> DecodeResult<Self> {
+        TryFrom::try_from(lazy)
+    }
+}
+
+impl<'a> Lazy<'a> for MultiByteStreamSenderConfigLazy<'a> {
+    type Owned = MultiByteStreamSenderConfig;
+}
+
+impl<'a> Compatible<MultiByteStreamSenderConfigLazy<'a>> for MultiByteStreamSenderConfigLazy<'a> { }
+impl<'a> Compatible<MultiByteStreamSenderConfigLazy<'a>> for MultiByteStreamSenderConfig { }
+impl Compatible<MultiByteStreamSenderConfig> for MultiByteStreamSenderConfig { }
+impl<'a> Compatible<MultiByteStreamSenderConfig> for MultiByteStreamSenderConfigLazy<'a> { }
+
+impl<'a> MultiByteStreamSenderConfigLazy<'a> {}
+
+impl BaseLen for MultiByteStreamSenderConfig {
+    const BASE_LEN: usize = 0;
+}
+
+impl Encode for MultiByteStreamSenderConfig {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl<'a> Decode<'a> for MultiByteStreamSenderConfig {
+    fn decode(_: &DecodeCursor<'a>) -> DecodeResult<Self> {
+
+        Ok(MultiByteStreamSenderConfig {})
+    }
+}
+
+impl<'a> BaseLen for MultiByteStreamSenderConfigLazy<'a> {
+    const BASE_LEN: usize = 0;
+}
+
+impl<'a> Encode for MultiByteStreamSenderConfigLazy<'a> {
+    fn scratch_len(&self) -> usize {
+        0
+    }
+
+    fn encode(&self, _: &mut EncodeCursor) {}
+}
+
+impl<'a> Decode<'a> for MultiByteStreamSenderConfigLazy<'a> {
+    fn decode(cursor: &DecodeCursor<'a>) -> DecodeResult<Self> {
+        let offset = cursor.offset();
+        cursor.advance(Self::BASE_LEN);
+        Ok(MultiByteStreamSenderConfigLazy {
+            buffer: cursor.buffer(),
+            offset,
+        })
+    }
+}
+
+impl<'a> TryFrom<MultiByteStreamSenderConfigLazy<'a>> for MultiByteStreamSenderConfig {
+    type Error = DecodeError;
+
+    fn try_from(other: MultiByteStreamSenderConfigLazy<'a>) -> Result<Self, Self::Error> {
+        let cursor = DecodeCursor::at_offset(other.buffer, other.offset);
+        Decode::decode(&cursor)
+    }
+}
+
+impl<'a> Copy for MultiByteStreamSenderConfigLazy<'a> { }
+
+impl<'a> Clone for MultiByteStreamSenderConfigLazy<'a> {
+    fn clone(&self) -> Self {
+        Self {
+            buffer: self.buffer,
+            offset: self.offset,
+        }
+    }
+}
+
+impl<'a> core::fmt::Debug for MultiByteStreamSenderConfigLazy<'a> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("MultiByteStreamSenderConfigLazy")
+            .finish()
+    }
+}
+
+impl<'a> PartialEq for MultiByteStreamSenderConfigLazy<'a> {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}

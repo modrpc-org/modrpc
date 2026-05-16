@@ -62,3 +62,15 @@ impl InterfaceSchema for ByteStreamInterface {
         }
     }
 }
+
+pub struct MultiByteStreamInterface {
+    pub blob: InterfaceEvent<()>,
+}
+
+impl InterfaceSchema for MultiByteStreamInterface {
+    fn new(ib: &mut InterfaceBuilder) -> Self {
+        Self {
+            blob: ib.event("blob"),
+        }
+    }
+}

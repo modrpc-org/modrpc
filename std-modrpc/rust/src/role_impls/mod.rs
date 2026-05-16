@@ -1,3 +1,7 @@
+mod multi_byte_stream_sender;
+pub use multi_byte_stream_sender::*;
+mod multi_byte_stream_receiver;
+pub use multi_byte_stream_receiver::*;
 mod byte_stream_sender;
 pub use byte_stream_sender::*;
 mod byte_stream_receiver;

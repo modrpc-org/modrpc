@@ -717,7 +717,7 @@ dependencies = [
 
 [[package]]
 name = "modrpc"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "bab",
  "burstq",
@@ -800,9 +800,9 @@ checksum = "822a7845dd561584a4bfdc9ca97586e6855342487b1b8202d7246f537afa08b4"
 
 [[package]]
 name = "mproto-codegen"
-version = "0.0.5"
+version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc58dc1056ff4ed3ccb9c41ca47731bb4923f2a6c9128a076b2b4d704c76fb60"
+checksum = "77ae082296fedd192781945b32b143b32cb593da16c04dec9ae8f51a4dad2f8b"
 dependencies = [
  "genco",
  "nom",
@@ -1171,11 +1171,12 @@ dependencies = [
 
 [[package]]
 name = "std-modrpc"
-version = "0.0.2"
+version = "0.0.7"
 dependencies = [
  "localq",
  "log",
  "modrpc",
+ "modrpc-executor",
  "mproto",
  "probius",
  "refpool",

@@ -101,3 +101,13 @@ interface ByteStream @(Receiver, Sender) {
         consume: u64 -> [u8],
     }
 }
+
+interface MultiByteStream @(Receiver, Sender) {
+    events @(Sender) -> @(Receiver) {
+        private blob: void,
+    }
+
+    methods @(Sender) {
+        new_stream: MultiStreamId -> void,
+    }
+}
